@@ -43,15 +43,7 @@ class MongoDBHandler : DatabaseHandlerInterface {
             }
 
             if (rewardCollection.countDocuments() == 0L) {
-                rewardCollection.insertOne(pokeballReward1)
-                rewardCollection.insertOne(pokeballReward2)
-                rewardCollection.insertOne(pokeballReward3)
-                rewardCollection.insertOne(pebblesReward1)
-                rewardCollection.insertOne(pebblesReward2)
-                rewardCollection.insertOne(pebblesReward3)
-                rewardCollection.insertOne(rareCanReward1)
-                rewardCollection.insertOne(rareCanReward2)
-                rewardCollection.insertOne(rareCanReward3)
+                rewardList.forEach { rewardCollection.insertOne(it) }
             }
         }
 
@@ -95,6 +87,14 @@ class MongoDBHandler : DatabaseHandlerInterface {
                 Updates.set("completed", huntSession.completed), Updates.set("winner", huntSession.winner)
             )
         )
+    }
+
+    override fun getPersonalHunts(): List<Hunt> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPersonalHuntSessions(): Map<String, PersonalHuntSession> {
+        TODO("Not yet implemented")
     }
 
     override fun initPlayerRewardStorage(playerUUID: String, playerName: String) {

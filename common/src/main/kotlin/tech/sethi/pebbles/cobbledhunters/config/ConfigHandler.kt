@@ -2,9 +2,12 @@ package tech.sethi.pebbles.cobbledhunters.config
 
 import com.google.gson.GsonBuilder
 import net.minecraft.item.ItemStack
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
+import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntScreenConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.ScreensReadMe
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.SelectionScreenConfig
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
@@ -17,18 +20,23 @@ object ConfigHandler {
 
     init {
         EconomyConfig
+        BaseConfig
+        LangConfig
 
         DatastoreConfig
         DatabaseHandler
 
         SelectionScreenConfig
         GlobalHuntScreenConfig
+        PersonalHuntScreenConfig
 
 
         ScreensReadMe
     }
 
     fun reload() {
+        BaseConfig.reload()
+        LangConfig.reload()
         EconomyConfig.reload()
 
         DatastoreConfig.reload()
@@ -36,6 +44,7 @@ object ConfigHandler {
 
         SelectionScreenConfig.reload()
         GlobalHuntScreenConfig.reload()
+        PersonalHuntScreenConfig.reload()
     }
 
     data class SerializedItemStack(

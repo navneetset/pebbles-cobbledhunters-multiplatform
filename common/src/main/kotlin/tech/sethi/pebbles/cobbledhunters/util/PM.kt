@@ -17,15 +17,17 @@ import net.minecraft.nbt.NbtString
 import net.minecraft.registry.Registries
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvent
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import java.util.*
 
 
 object PM {
 
-    private fun parseMessageWithStyles(text: String, placeholder: String, style: Boolean = true): Component {
+    fun parseMessageWithStyles(text: String, placeholder: String = "", style: Boolean = true): Component {
         val mm = if (style) {
             MiniMessage.miniMessage()
         } else {
@@ -54,7 +56,15 @@ object PM {
         val loreNbt = NbtList()
 
         for (line in lore) {
-            loreNbt.add(NbtString.of(returnStyledJson(line)))
+            if (line.contains("\n")) {
+                val splitLines = line.split("\n")
+                for (splitLine in splitLines) {
+                    loreNbt.add(NbtString.of(returnStyledJson(splitLine)))
+                }
+                continue
+            } else {
+                loreNbt.add(NbtString.of(returnStyledJson(line)))
+            }
         }
 
         itemNbt.put("Lore", loreNbt)
@@ -151,5 +161,13 @@ object PM {
         val hours = minutes / 60
 
         return "${hours}h ${minutes % 60}m ${seconds % 60}s"
+    }
+
+    fun getPlayer(uuidOrName: String): ServerPlayerEntity? {
+        try {
+            return server()!!.playerManager.getPlayer(UUID.fromString(uuidOrName))
+        } catch (e: IllegalArgumentException) {
+            return server()!!.playerManager.getPlayer(uuidOrName)
+        }
     }
 }

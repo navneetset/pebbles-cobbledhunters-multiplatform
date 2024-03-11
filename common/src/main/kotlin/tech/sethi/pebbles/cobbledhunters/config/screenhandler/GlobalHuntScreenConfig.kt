@@ -48,8 +48,9 @@ object GlobalHuntScreenConfig {
             nbt = null,
             lore = listOf(
                 "<gray>There is no global hunt in this slot.", "<gray>Check back later!"
-            )
-        )
+            ),
+        ),
+        val emptySlots: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
     )
 
     data class SlotConfig(

@@ -6,7 +6,7 @@ object ScreensReadMe {
     private val readmeFile = File("config/pebbles-cobbledhunters/screens/readme.md")
 
     private val instructions = """
-# Pebble's Global Trade Screen Configuration Guide
+# Pebble's Screen Configuration Guide
 
 This guide explains how to configure the screens for Pebble's Global Trade Menu. Customize the appearance of your trade menu by altering titles, item stacks, and their corresponding slots.
 
@@ -21,41 +21,42 @@ This guide explains how to configure the screens for Pebble's Global Trade Menu.
 ### Title
 - `title`: Customize the title that appears on the trade screen.
   - Example: `"title": "<aqua>Pebble's Global Trade Menu"`
-
-### Marketplace and Warehouse Stack
-Define the appearance and placement of the stacks in the trade menu.
-
-- `displayName`: The name displayed for the stack.
-- `material`: The item used for the stack. Supports custom items.
-- `amount`: Number of items in the stack.
-- `nbt`: Additional NBT data for the stack.
-
-### Slots
-Array of integers indicating the positions of the stacks in the menu interface.
-
-- Example: 
-  - `"pokemonMarketplaceSlots": [0, 1, 2, ...]`
-  - Slot numbers correspond to the inventory slot positions.
+  You may also use a custom font by specifying the font bitmap in the title.
 
 ## Example Configuration
 
 ```json
 {
-  "title": "<aqua>Pebble's Global Trade Menu",
-  "pokemonMarketplaceStack": {
-    "displayName": "<aqua>Pokemon Marketplace",
-    "material": "cobblemon:poke_ball",
+  "title": "<blue>Global Hunts",
+  "slots": [
+    {
+      "slot": 0,
+      "huntPoolId": "arachnid_pool",
+      "itemStack": {
+        "displayName": "<light_purple>Arachnids",
+        "material": "minecraft:spider_spawn_egg",
+        "amount": 1,
+        "lore": [
+          "<gray>Difficulty: <light_purple>Easy",
+          "<gray>Features: <light_purple>Arachnids Pokémon",
+          "<gray>Time Limit: <light_purple>2 Hours",
+          "<gray>Start Time: <light_purple>Every 2 Hours",
+          "<aqua>Click to view rewards!",
+          "",
+          "{ongoing_hunt}"
+        ]
+      }
+    }
+  ],
+  "emptySlotItemStack": {
+    "displayName": "<gray>",
+    "material": "minecraft:gray_stained_glass_pane",
     "amount": 1,
-    "nbt": ""
-  },
-  "pokemonMarketplaceSlots": [0, 1, 2, 9, 10, 11, 18, 19, 20],
-  "itemMarketplaceStack": {
-    "displayName": "<aqua>Item Marketplace",
-    "material": "minecraft:chest",
-    "amount": 1,
-    "nbt": ""
-  },
-  // ... other configurations ...
+    "lore": [
+      "<gray>There is no global hunt in this slot.",
+      "<gray>Check back later!"
+    ]
+  }
 }
 ```
     """.trimMargin()

@@ -13,6 +13,8 @@ interface DatabaseHandlerInterface {
     fun getGlobalHunts(): List<Hunt>
     fun getGlobalHuntPools(): List<HuntPool>
     fun getGlobalHuntSessions(): Map<String, GlobalHuntSession>
+    fun getPersonalHunts(): List<Hunt>
+    fun getPersonalHuntSessions(): Map<String, PersonalHuntSession>
 
     fun addGlobalHuntSession(huntSession: GlobalHuntSession): Boolean
     fun updateGlobalHuntSession(huntSession: GlobalHuntSession)

@@ -5,13 +5,13 @@ import tech.sethi.pebbles.cobbledhunters.hunt.type.Hunt
 import tech.sethi.pebbles.cobbledhunters.util.ConfigDirectoryHandler
 import java.io.File
 
-object PersonalHuntConfigLoader {
+object PersonalHuntSessionConfigLoader {
 
     val gson = ConfigHandler.gson
-    val personalHuntDirectory = File(ConfigHandler.configDirectory, "personal_hunts")
+    val personalHuntSessionDirectory = File(ConfigHandler.configDirectory, "personal_hunts_session")
 
     val personalHuntFilesHandler = ConfigDirectoryHandler(
-        Hunt::class.java, personalHuntDirectory, gson
+        Hunt::class.java, personalHuntSessionDirectory, gson
     )
 
     var personalHunts = mutableListOf<Hunt>()
@@ -27,9 +27,9 @@ object PersonalHuntConfigLoader {
 
     fun createHunt(hunt: Hunt) {
         personalHunts += hunt
-        personalHuntDirectory.mkdirs()
+        personalHuntSessionDirectory.mkdirs()
         val configString = gson.toJson(hunt)
-        val file = File(personalHuntDirectory, "${hunt.id}.json")
+        val file = File(personalHuntSessionDirectory, "${hunt.id}.json")
         file.writeText(configString)
     }
 }

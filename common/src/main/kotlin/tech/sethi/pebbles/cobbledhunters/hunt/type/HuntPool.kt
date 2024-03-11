@@ -36,6 +36,7 @@ val spiderHuntList = listOf(
                 )
             )
         ),
+        experience = 100
     ),
     Hunt(
         id = "ariados",
@@ -58,7 +59,8 @@ val spiderHuntList = listOf(
                     PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3), PoolReward(rareCanReward3.id, 1)
                 )
             )
-        )
+        ),
+        experience = 200
     ),
     Hunt(
         id = "joltik",
@@ -81,7 +83,8 @@ val spiderHuntList = listOf(
                     PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3), PoolReward(rareCanReward3.id, 1)
                 )
             )
-        )
+        ),
+        experience = 300
     ),
     Hunt(
         id = "galvantula",
@@ -104,7 +107,8 @@ val spiderHuntList = listOf(
                     PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3), PoolReward(rareCanReward3.id, 1)
                 )
             )
-        )
+        ),
+        experience = 300
     ),
     Hunt(
         id = "dewpider",
@@ -127,7 +131,8 @@ val spiderHuntList = listOf(
                     PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3), PoolReward(rareCanReward3.id, 1)
                 )
             )
-        )
+        ),
+        experience = 300
     ),
     Hunt(
         id = "araquanid",
@@ -156,3 +161,310 @@ val spiderHuntList = listOf(
 
 val arachnidPool = HuntPool("arachnid_pool", "<light_purple>Arachnids", spiderHuntList.map { it.id })
 
+val personalWoolooEasy = Hunt(
+    id = "wooloo_easy",
+    name = "<light_purple>Female <white>Wooloo",
+    difficulty = HuntDifficulties.EASY,
+    huntFeature = HuntFeature(
+        listOf("wooloo")
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward1.id, pebblesReward1.id, rareCanReward1.id
+    ),
+    amount = 1,
+    timeLimitMinutes = 30,
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward1.id, 5), PoolReward(pokeballReward2.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3)
+            )
+        )
+    ),
+    description = listOf(
+        "<white>Find and capture a female Wooloo!"
+    ),
+    experience = 30,
+    cost = 50
+)
+
+val personalZubatEasy = Hunt(
+    id = "zubat_easy", name = "<light_purple>Zubat", difficulty = HuntDifficulties.EASY, huntFeature = HuntFeature(
+        listOf("zubat")
+    ), guaranteedRewardId = listOf(
+        pokeballReward1.id, pebblesReward1.id, rareCanReward1.id
+    ), amount = 1, timeLimitMinutes = 30, rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward1.id, 5), PoolReward(pokeballReward2.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward1.id, 5), PoolReward(rareCanReward2.id, 3)
+            )
+        )
+    ), description = listOf(
+        "<white>Find and capture a Zubat!"
+    ), experience = 30,
+    cost = 50
+)
+
+val personalPsyduckMedium = Hunt(
+    id = "psyduck_medium",
+    name = "<light_purple>Psyduck",
+    difficulty = HuntDifficulties.MEDIUM,
+    huntFeature = HuntFeature(
+        listOf("psyduck")
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward2.id, pebblesReward1.id, rareCanReward1.id
+    ),
+    amount = 1,
+    timeLimitMinutes = 60,
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        )
+    ),
+    description = listOf(
+        "<white>Find and capture a Psyduck!"
+    ),
+    experience = 60,
+    cost = 100
+)
+
+val personalPikachuMedium = Hunt(
+    id = "pikachu_medium",
+    name = "<light_purple>Pikachu",
+    difficulty = HuntDifficulties.MEDIUM,
+    huntFeature = HuntFeature(
+        listOf("pikachu")
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward2.id, pebblesReward1.id, rareCanReward1.id
+    ),
+    amount = 1,
+    timeLimitMinutes = 60,
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        )
+    ),
+    description = listOf(
+        "<white>Find and capture a Pikachu!"
+    ),
+    experience = 60,
+    cost = 100
+)
+
+val personalWoolooHard = Hunt(
+    id = "wooloo_hard",
+    name = "10x <light_purple>Female <white>Wooloo",
+    difficulty = HuntDifficulties.HARD,
+    huntFeature = HuntFeature(
+        listOf("wooloo"), nature = PokemonNatures.CALM, gender = HuntGender.FEMALE, ball = HuntBalls.FRIEND_BALL
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward2.id, pebblesReward2.id, rareCanReward2.id
+    ),
+    amount = 10,
+    timeLimitMinutes = 90,
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        )
+    ),
+    description = listOf(
+        "<white>Find and capture 10 Female Wooloo!",
+        "<white>Must be caught in a <light_purple>Friend Ball<white> and have a <light_purple>Calm<white> nature!"
+    ),
+    experience = 100,
+    cost = 200
+)
+
+val personalZubatHard = Hunt(
+    id = "zubat_hard", name = "10x <light_purple>Zubat", difficulty = HuntDifficulties.HARD, huntFeature = HuntFeature(
+        listOf("zubat"), nature = PokemonNatures.JOLLY, gender = HuntGender.ANY, ball = HuntBalls.ULTRA_BALL
+    ), guaranteedRewardId = listOf(
+        pokeballReward2.id, pebblesReward2.id, rareCanReward2.id
+    ), amount = 10, timeLimitMinutes = 90, rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        )
+    ), description = listOf(
+        "<white>Find and capture 10 Zubat!",
+        "<white>Must be caught in a <light_purple>Ultra Ball<white> and have a <light_purple>Jolly<white> nature!"
+    ), experience = 100,
+    cost = 200
+)
+
+
+val personalStarterGenOneLegendary = Hunt(
+    id = "starter_legendary",
+    name = "<light_purple>Starter <white>Legendary",
+    difficulty = HuntDifficulties.LEGENDARY,
+    amount = 3,
+    huntFeature = HuntFeature(
+        listOf("bulbasaur", "charmander", "squirtle"), shiny = false, ball = HuntBalls.POKE_BALL
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward3.id, pebblesReward3.id, rareCanReward3.id
+    ),
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(pebblesReward2.id, 5), PoolReward(pebblesReward3.id, 3)
+            )
+        )
+    ),
+    timeLimitMinutes = 120,
+    description = listOf(
+        "<white>Find and capture any 3 Gen 1 <light_purple>Starter <white>Pokemon!",
+        "<white>Must be caught in a <red>Poke<white>Ball!"
+    ),
+    experience = 200,
+    cost = 300
+)
+
+val personalStarterGenTwoLegendary = Hunt(
+    id = "starter_legendary_gen_two",
+    name = "<light_purple>Starter <white>Legendary",
+    difficulty = HuntDifficulties.LEGENDARY,
+    amount = 3,
+    huntFeature = HuntFeature(
+        listOf("chikorita", "cyndaquil", "totodile"), shiny = false, ball = HuntBalls.POKE_BALL
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward3.id, pebblesReward3.id, rareCanReward3.id
+    ),
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(pebblesReward2.id, 5), PoolReward(pebblesReward3.id, 3)
+            )
+        )
+    ),
+    timeLimitMinutes = 120,
+    description = listOf(
+        "<white>Find and capture any 3 Gen 2 <light_purple>Starter <white>Pokemon!",
+        "<white>Must be caught in a <red>Poke<white>Ball!"
+    ),
+    experience = 200,
+    cost = 300
+)
+
+val personalCharmanderGodlike = Hunt(
+    id = "charmander_godlike",
+    name = "<light_purple>Charmander",
+    difficulty = HuntDifficulties.GODLIKE,
+    huntFeature = HuntFeature(
+        listOf("charmander"), shiny = true, ball = HuntBalls.ULTRA_BALL
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward3.id, pebblesReward3.id, pebblesReward3.id, rareCanReward3.id
+    ),
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(pebblesReward2.id, 5), PoolReward(pebblesReward3.id, 3)
+            )
+        )
+    ),
+    timeLimitMinutes = 120,
+    description = listOf(
+        "<white>Find and capture a <light_purple>Shiny <white>Charmander!",
+        "<white>Must be caught in a <light_purple>Ultra Ball!"
+    ),
+    experience = 500,
+    cost = 500
+)
+
+val personalBulbasaurGodlike = Hunt(
+    id = "bulbasaur_godlike",
+    name = "<light_purple>Bulbasaur",
+    difficulty = HuntDifficulties.GODLIKE,
+    huntFeature = HuntFeature(
+        listOf("bulbasaur"), shiny = true, ball = HuntBalls.ULTRA_BALL
+    ),
+    guaranteedRewardId = listOf(
+        pokeballReward3.id, pebblesReward3.id, pebblesReward3.id, rareCanReward3.id
+    ),
+    rewardPools = listOf(
+        Pool(
+            listOf(
+                PoolReward(pokeballReward2.id, 5), PoolReward(pokeballReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(rareCanReward2.id, 5), PoolReward(rareCanReward3.id, 3)
+            )
+        ), Pool(
+            listOf(
+                PoolReward(pebblesReward2.id, 5), PoolReward(pebblesReward3.id, 3)
+            )
+        )
+    ),
+    timeLimitMinutes = 120,
+    description = listOf(
+        "<white>Find and capture a <light_purple>Shiny <white>Bulbasaur!",
+        "<white>Must be caught in a <light_purple>Ultra Ball!"
+    ),
+    experience = 500,
+    cost = 500
+)
+
+val personalHuntList = listOf(
+    personalWoolooEasy, personalZubatEasy, personalPsyduckMedium, personalPikachuMedium, personalWoolooHard, personalZubatHard,
+    personalStarterGenOneLegendary, personalStarterGenTwoLegendary, personalCharmanderGodlike, personalBulbasaurGodlike
+)

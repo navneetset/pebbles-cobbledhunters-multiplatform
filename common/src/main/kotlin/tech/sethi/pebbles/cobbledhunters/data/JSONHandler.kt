@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntPoolConfigLoader
+import tech.sethi.pebbles.cobbledhunters.config.hunt.personal.PersonalHuntConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.reward.PlayerRewardStorageConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
@@ -14,11 +15,13 @@ class JSONHandler : DatabaseHandlerInterface {
 
     var rewardLoader = RewardConfigLoader
 
-    var personalHunts = mutableListOf<Hunt>()
     var globalHuntsLoader = GlobalHuntConfigLoader
 
     var globalHuntsPoolLoader = GlobalHuntPoolConfigLoader
     var globalHuntsSessions = mutableMapOf<String, GlobalHuntSession>()
+
+    var personalHuntsLoader = PersonalHuntConfigLoader
+    var personalHuntsSessions = mutableMapOf<String, PersonalHuntSession>()
 
     val rewardStorageLoader = PlayerRewardStorageConfigLoader
 
@@ -27,6 +30,11 @@ class JSONHandler : DatabaseHandlerInterface {
             if (getGlobalHunts().count() == 0) spiderHuntList.forEach { globalHuntsLoader.createHunt(it) }
             if (getGlobalHuntPools().count() == 0) globalHuntsPoolLoader.createHuntPool(arachnidPool)
             if (rewardLoader.rewards.count() == 0) rewardList.forEach { rewardLoader.createReward(it) }
+            if (personalHuntsLoader.personalHunts.count() == 0) personalHuntList.forEach {
+                personalHuntsLoader.createHunt(
+                    it
+                )
+            }
         }
 
         PlayerEvent.PLAYER_JOIN.register { player ->
@@ -70,6 +78,14 @@ class JSONHandler : DatabaseHandlerInterface {
 
     override fun updateGlobalHuntSession(huntSession: GlobalHuntSession) {
         globalHuntsSessions[huntSession.huntPoolId] = huntSession
+    }
+
+    override fun getPersonalHunts(): List<Hunt> {
+        return personalHuntsLoader.personalHunts
+    }
+
+    override fun getPersonalHuntSessions(): Map<String, PersonalHuntSession> {
+        return personalHuntsSessions
     }
 
     override fun initPlayerRewardStorage(playerUUID: String, playerName: String) {

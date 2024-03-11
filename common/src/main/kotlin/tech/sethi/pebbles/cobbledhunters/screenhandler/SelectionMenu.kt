@@ -22,7 +22,8 @@ class SelectionMenu(
     val emptySlots = config.emptySlots
     val globalHuntsSlots = config.globalHuntsSlots
     val personalHuntsSlots = config.personalHuntsSlots
-    val statsSlots = config.statsSlots
+    val leaderboardSlots = config.leaderboardSlot
+    val personalStatsSlot = config.personalStatsSlot
     val rewardInventorySlots = config.rewardInventorySlots
 
     init {
@@ -53,7 +54,11 @@ class SelectionMenu(
             inventory.setStack(slot, config.personalHuntsStack.toItemStack())
         }
 
-        statsSlots.forEach { slot ->
+        leaderboardSlots.forEach { slot ->
+            inventory.setStack(slot, config.leaderboardStack.toItemStack())
+        }
+
+        personalStatsSlot.forEach { slot ->
             inventory.setStack(slot, config.personalStatsStack.toItemStack())
         }
 
@@ -74,7 +79,7 @@ class SelectionMenu(
             1.0f,
             player!!.blockPos,
             player.world,
-            8.0,
+            2.0,
             player as ServerPlayerEntity
         )
 
@@ -85,11 +90,11 @@ class SelectionMenu(
             }
 
             in personalHuntsSlots -> {
-
+                player.openHandledScreen(personalHuntMenuScreenHandlerFactory(player))
                 return
             }
 
-            in statsSlots -> {
+            in leaderboardSlots -> {
 
                 return
             }
@@ -111,7 +116,7 @@ class SelectionMenu(
             1.0f,
             player!!.blockPos,
             player.world,
-            8.0,
+            2.0,
             player as ServerPlayerEntity
         )
         super.onClosed(player)
