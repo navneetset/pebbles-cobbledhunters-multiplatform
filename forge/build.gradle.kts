@@ -82,7 +82,9 @@ tasks.shadowJar {
     exclude("architectury.common.json")
     exclude("com/google/gson/**/*")
 
-    relocate("net.kyori", "tech.sethi.pebbles.kyori")
+    relocate("net.kyori", "tech.sethi.pebbles.cobbledhunters.kyori")
+    relocate("META-INF/services", "META-INF/services/tech.sethi.pebbles.cobbledhunters")
+
 
     configurations = listOf(shadowCommon)
     archiveClassifier.set("dev-shadow")

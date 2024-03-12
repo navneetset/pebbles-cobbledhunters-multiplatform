@@ -7,6 +7,7 @@ import net.minecraft.entity.boss.BossBar.Color
 import net.minecraft.entity.boss.BossBar.Style
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
+import tech.sethi.pebbles.cobbledhunters.CobbledHunters
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
@@ -161,49 +162,63 @@ object PersonalHuntHandler {
         val personalHunts = getPersonalHunts(playerUUID, playerName)
         val huntTracker = personalHunts.getHuntByDifficulty(difficulty) ?: return
         if (huntTracker.active) return
-        huntTracker.active = true
-        huntTracker.startTime = System.currentTimeMillis()
-        huntTracker.endTime = System.currentTimeMillis() + huntTracker.hunt.timeLimitMinutes * 60 * 1000
 
-        val bossBarTextWithProgress =
-            PM.returnStyledText("${huntTracker.hunt.name} <yellow>${huntTracker.progress}/${huntTracker.hunt.amount}</yellow>")
+        startHunt(huntTracker)
+        val bossBarTextWithProgress = createBossBarText(huntTracker)
+        val bossbar = createServerBossBar(bossBarTextWithProgress)
 
-        val bossbar = ServerBossBar(
-            bossBarTextWithProgress, Color.PURPLE, Style.PROGRESS
-        )
         val player = PM.getPlayer(playerName) ?: return
-        bossbar.addPlayer(player)
-        progressBossbar[playerUUID] = bossbar
+        addPlayerToBossbar(bossbar, player, playerUUID)
 
         if (BaseConfig.baseConfig.enablePartyHunts) {
-            val party = PartyHandler.db.getPlayerParty(playerName)
-            if (party != null) {
-                party.members.forEach {
-                    val memberPersonalHunts = getPersonalHunts(it, it)
-                    val memberHuntTracker = memberPersonalHunts.getHuntByDifficulty(difficulty)
-                    memberHuntTracker?.active = true
-                    memberHuntTracker?.startTime = huntTracker.startTime
-                    memberHuntTracker?.endTime = huntTracker.endTime
-                    memberHuntTracker?.progress = huntTracker.progress
+            updatePartyMembersHunts(playerName, difficulty, huntTracker, bossBarTextWithProgress)
+        }
+    }
 
-                    val partyPlayer = PM.getPlayer(it)
-                    if (partyPlayer != null) {
-                        val membeerBossbar = progressBossbar[partyPlayer.uuidAsString]
-                        if (membeerBossbar != null) {
-                            membeerBossbar.name = bossBarTextWithProgress
-                            membeerBossbar.addPlayer(partyPlayer)
-                        } else {
-                            val newBossbar = ServerBossBar(
-                                bossBarTextWithProgress, Color.PURPLE, Style.PROGRESS
-                            )
-                            newBossbar.addPlayer(partyPlayer)
-                            progressBossbar[partyPlayer.uuidAsString] = newBossbar
-                        }
-                    }
-                }
+    private fun startHunt(huntTracker: HuntTracker) {
+        val currentTime = System.currentTimeMillis()
+        huntTracker.apply {
+            active = true
+            startTime = currentTime
+            endTime = currentTime + hunt.timeLimitMinutes * 60 * 1000
+        }
+    }
+
+    private fun createBossBarText(huntTracker: HuntTracker): String {
+        return "${huntTracker.hunt.name} <yellow>${huntTracker.progress}/${huntTracker.hunt.amount}</yellow>"
+    }
+
+    private fun createServerBossBar(text: String): ServerBossBar {
+        return ServerBossBar(PM.returnStyledText(text), Color.PURPLE, Style.PROGRESS)
+    }
+
+    private fun addPlayerToBossbar(bossbar: ServerBossBar, player: ServerPlayerEntity, playerUUID: String) {
+        bossbar.addPlayer(player)
+        progressBossbar[playerUUID] = bossbar
+    }
+
+    private fun updatePartyMembersHunts(
+        playerName: String, difficulty: HuntDifficulties, huntTracker: HuntTracker, bossBarText: String
+    ) {
+        val party = PartyHandler.db.getPlayerParty(playerName) ?: return
+        party.members.forEach { memberName ->
+            val memberPersonalHunts = getPersonalHunts(memberName, memberName)
+            val memberHuntTracker = memberPersonalHunts.getHuntByDifficulty(difficulty)
+            memberHuntTracker?.apply {
+                active = true
+                startTime = huntTracker.startTime
+                endTime = huntTracker.endTime
+                progress = huntTracker.progress
+            }
+
+            PM.getPlayer(memberName)?.let { partyPlayer ->
+                val memberBossbar = progressBossbar[partyPlayer.uuidAsString] ?: createServerBossBar(bossBarText)
+                memberBossbar.addPlayer(partyPlayer)
+                progressBossbar[partyPlayer.uuidAsString] = memberBossbar
             }
         }
     }
+
 
     fun cancelHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties) {
         val personalHunts = getPersonalHunts(playerUUID, playerName)
@@ -236,6 +251,9 @@ object PersonalHuntHandler {
         huntTracker.active = false
         huntTracker.success = true
 
+        // reward player
+        rewardHunt(playerUUID, playerName, difficulty)
+
         // remove hunt from player
         personalHunts.setHuntByDifficulty(difficulty, null)
 
@@ -243,6 +261,7 @@ object PersonalHuntHandler {
         player.sendMessage(
             PM.returnStyledText(LangConfig.langConfig.huntCompleted), false
         )
+
     }
 
     fun rewardHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties) {
@@ -270,45 +289,32 @@ object PersonalHuntHandler {
                 if (huntTracker.hunt.huntFeature.checkRequirement(pokemon)) {
                     huntTracker.progress++
 
-                    if (BaseConfig.baseConfig.enablePartyHunts) {
+                    if (BaseConfig.baseConfig.enablePartyHunts && PartyHandler.db.getPlayerParty(player.name.string) != null) {
                         val party = PartyHandler.db.getPlayerParty(player.name.string)
-                        if (party != null) {
-                            party.members.forEach {
-                                val memberPersonalHunts = getPersonalHunts(it, it)
-                                val memberHuntTracker =
-                                    memberPersonalHunts.getHuntByDifficulty(huntTracker.hunt.difficulty)
-                                memberHuntTracker?.progress = huntTracker.progress
+                        party?.members?.forEach { memberName ->
+                            val partyPlayer = PM.getPlayer(memberName) ?: return
+                            val memberPersonalHunts = getPersonalHunts(partyPlayer.uuidAsString, memberName)
+                            val memberHuntTracker = memberPersonalHunts.getHuntByDifficulty(huntTracker.hunt.difficulty)
+                            memberHuntTracker?.progress = huntTracker.progress
 
-                                val partyPlayer = PM.getPlayer(it)
-                                if (partyPlayer != null) {
-                                    if (memberHuntTracker != null) {
-                                        progressBossbar[partyPlayer.uuidAsString]?.name =
-                                            PM.returnStyledText("${memberHuntTracker.hunt.name} <yellow>${memberHuntTracker.progress}/${memberHuntTracker.hunt.amount}</yellow>")
-                                    }
+                            val memberBossbar = progressBossbar[partyPlayer.uuidAsString]
+                            memberBossbar?.name = PM.returnStyledText(createBossBarText(huntTracker))
 
-                                    if ((memberHuntTracker?.progress ?: 0) >= (memberHuntTracker?.hunt?.amount ?: 1)) {
-                                        memberHuntTracker?.hunt?.difficulty?.let { diff ->
-                                            completeHunt(
-                                                partyPlayer.uuidAsString, partyPlayer.name.string, diff
-                                            )
-                                            rewardHunt(
-                                                partyPlayer.uuidAsString, partyPlayer.name.string, diff
-                                            )
-                                        }
-                                    }
+                            if (memberHuntTracker != null) {
+                                CobbledHunters.LOGGER.info("Member hunt progress: ${memberHuntTracker.progress}")
+                                if (memberHuntTracker.progress >= huntTracker.hunt.amount) {
+                                    CobbledHunters.LOGGER.info("Member hunt completed")
+                                    completeHunt(partyPlayer.uuidAsString, memberName, huntTracker.hunt.difficulty)
                                 }
                             }
-
-                            return
                         }
-                    }
+                    } else {
+                        val bossbar = progressBossbar[player.uuidAsString]
+                        bossbar?.name = PM.returnStyledText(createBossBarText(huntTracker))
 
-                    progressBossbar[player.uuidAsString]?.name =
-                        PM.returnStyledText("${huntTracker.hunt.name} <yellow>${huntTracker.progress}/${huntTracker.hunt.amount}</yellow>")
-
-                    if (huntTracker.progress >= huntTracker.hunt.amount) {
-                        completeHunt(player.uuidAsString, player.name.string, huntTracker.hunt.difficulty)
-                        rewardHunt(player.uuidAsString, player.name.string, huntTracker.hunt.difficulty)
+                        if (huntTracker.progress >= huntTracker.hunt.amount) {
+                            completeHunt(player.uuidAsString, player.name.string, huntTracker.hunt.difficulty)
+                        }
                     }
                 }
             }

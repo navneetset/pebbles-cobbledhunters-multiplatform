@@ -16,7 +16,7 @@ object HuntCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
 
         val huntCommand =
-            literal("hunt").requires { PermUtil.commandRequiresPermission(it, "pebbles.cobbledhunts.command.hunt") }
+            literal("hunt")
                 .executes { context: CommandContext<ServerCommandSource> ->
                     val player = context.source.player ?: return@executes 1.also {
                         context.source.sendFeedback(
@@ -25,8 +25,6 @@ object HuntCommand {
                     }
 
                     player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
-
-                    context.source.sendFeedback({ PM.returnStyledText("<blue>Coming soon!") }, false)
 
                     1
                 }
