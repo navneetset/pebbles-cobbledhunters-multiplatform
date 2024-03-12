@@ -96,26 +96,28 @@ class PersonalHuntMenu(
                 }
 
             }
-            lore.replaceAll { it.replace("{ongoing_hunt}", huntLore.joinToString("\n")) }
+            if (currentHunt != null) {
+                lore.replaceAll { it.replace("{ongoing_hunt}", huntLore.joinToString("\n")) }
 
-            val rolledTime = hunt?.getHuntByDifficulty(huntSlot.difficulty)?.rolledTime
-            val remainingRefreshTime =
-                difficultyTimeLimit[huntSlot.difficulty]!! - (System.currentTimeMillis() - (rolledTime ?: 0))
+                val rolledTime = hunt?.getHuntByDifficulty(huntSlot.difficulty)?.rolledTime
+                val remainingRefreshTime =
+                    difficultyTimeLimit[huntSlot.difficulty]!! - (System.currentTimeMillis() - (rolledTime ?: 0))
 
-            val isActive = hunt?.getHuntByDifficulty(huntSlot.difficulty)?.active == true
-            if (!isActive) {
-                lore.replaceAll { it.replace("{refreshing_time}", timeToPrettyString(remainingRefreshTime)) }
-            } else {
-                lore.replaceAll { it.replace("{refreshing_time}", "<green>Active</green>") }
+                val isActive = hunt?.getHuntByDifficulty(huntSlot.difficulty)?.active == true
+                if (!isActive) {
+                    lore.replaceAll { it.replace("{refreshing_time}", timeToPrettyString(remainingRefreshTime)) }
+                } else {
+                    lore.replaceAll { it.replace("{refreshing_time}", "<green>Active</green>") }
+                }
+
+                val remainingTime = currentHunt.endTime?.minus(System.currentTimeMillis())
+                if (remainingTime != null && remainingTime > 0) {
+                    lore.add(" ")
+                    lore.add(timeToPrettyString(remainingTime))
+                }
+
+                inventory.setStack(huntSlot.slot, huntSlot.itemStack.toItemStack(newLore = lore))
             }
-
-            val remainingTime = currentHunt?.endTime?.minus(System.currentTimeMillis())
-            if (remainingTime != null && remainingTime > 0) {
-                lore.add(" ")
-                lore.add(timeToPrettyString(remainingTime))
-            }
-
-            inventory.setStack(huntSlot.slot, huntSlot.itemStack.toItemStack(newLore = lore))
         }
 
         emptySlots.forEach { slot ->

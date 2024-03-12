@@ -41,6 +41,5 @@ data class HuntTracker(
     var endTime: Long?,
     var active: Boolean,
     var success: Boolean?,
-    var participants: MutableList<String> = mutableListOf(),
     var progress: Int = 0
 )
