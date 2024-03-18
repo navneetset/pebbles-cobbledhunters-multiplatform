@@ -30,7 +30,7 @@ object GlobalHuntScreenConfig {
                     material = "minecraft:spider_spawn_egg",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <light_purple>Easy",
                         "<gray>Features: <light_purple>Arachnids Pokémon",
                         "<gray>Time Limit: <light_purple>2 Hours",
@@ -46,7 +46,7 @@ object GlobalHuntScreenConfig {
             material = "minecraft:gray_stained_glass_pane",
             amount = 1,
             nbt = null,
-            lore = listOf(
+            lore = mutableListOf(
                 "<gray>There is no global hunt in this slot.", "<gray>Check back later!"
             ),
         ),

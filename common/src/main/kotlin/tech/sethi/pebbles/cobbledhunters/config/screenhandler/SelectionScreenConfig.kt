@@ -26,12 +26,12 @@ object SelectionScreenConfig {
         val title: String = "<blue>Pebble's Cobbled Hunters",
         val emptySlots: List<Int> = listOf(1, 3, 5, 7),
         val emptySlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "", "minecraft:gray_stained_glass_pane", 1, null, listOf(
+            "", "minecraft:gray_stained_glass_pane", 1, null, mutableListOf(
             )
         ),
         val globalHuntsSlots: List<Int> = listOf(0),
         val globalHuntsStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<light_purple>Global Hunts", "minecraft:map", 1, null, listOf(
+            "<light_purple>Global Hunts", "minecraft:map", 1, null, mutableListOf(
                 "<yellow>Compete in global hunts to earn rewards!",
                 "<yellow>Click on a hunt to view its details.",
                 "",
@@ -40,7 +40,7 @@ object SelectionScreenConfig {
         ),
         val personalHuntsSlots: List<Int> = listOf(2),
         val personalHuntsStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<yellow>Personal Hunts", "minecraft:book", 1, null, listOf(
+            "<yellow>Personal Hunts", "minecraft:book", 1, null, mutableListOf(
                 "<yellow>Complete personal hunts to earn rewards!",
                 "<yellow>Click on a hunt to view its details.",
                 "",
@@ -60,15 +60,15 @@ object SelectionScreenConfig {
         ),
         val leaderboardSlot: List<Int> = listOf(4),
         val leaderboardStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<gold>Leaderboard", "minecraft:paper", 1, null, listOf()
+            "<gold>Leaderboard", "minecraft:paper", 1, null, mutableListOf()
         ),
         val personalStatsSlot: List<Int> = listOf(6),
         val personalStatsStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<gold>Personal Stats", "minecraft:oak_hanging_sign", 1, null, listOf()
+            "<gold>Personal Stats", "minecraft:oak_hanging_sign", 1, null, mutableListOf()
         ),
         val rewardInventorySlots: List<Int> = listOf(8),
         val rewardInventory: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<gold>Reward Inventory", "minecraft:player_head", 1, "{SkullOwner:{player_name}}", listOf()
+            "<gold>Reward Inventory", "minecraft:player_head", 1, "{SkullOwner:{player_name}}", mutableListOf()
         )
     )
 }

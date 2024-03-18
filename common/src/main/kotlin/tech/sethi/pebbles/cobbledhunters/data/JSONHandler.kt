@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntPoolConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.personal.PersonalHuntConfigLoader
-import tech.sethi.pebbles.cobbledhunters.config.reward.PlayerRewardStorageConfigLoader
+import tech.sethi.pebbles.cobbledhunters.config.reward.RewardStorageConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 
@@ -23,14 +23,14 @@ class JSONHandler : DatabaseHandlerInterface {
     var personalHuntsLoader = PersonalHuntConfigLoader
     var personalHuntsSessions = mutableMapOf<String, PersonalHuntSession>()
 
-    val rewardStorageLoader = PlayerRewardStorageConfigLoader
+    val rewardStorageLoader = RewardStorageConfigLoader
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            if (getGlobalHunts().count() == 0) spiderHuntList.forEach { globalHuntsLoader.createHunt(it) }
-            if (getGlobalHuntPools().count() == 0) globalHuntsPoolLoader.createHuntPool(arachnidPool)
-            if (rewardLoader.rewards.count() == 0) rewardList.forEach { rewardLoader.createReward(it) }
-            if (personalHuntsLoader.personalHunts.count() == 0) personalHuntList.forEach {
+            if (getGlobalHunts().isEmpty()) spiderHuntList.forEach { globalHuntsLoader.createHunt(it) }
+            if (getGlobalHuntPools().isEmpty()) globalHuntsPoolLoader.createHuntPool(arachnidPool)
+            if (rewardLoader.rewards.isEmpty()) rewardList.forEach { rewardLoader.createReward(it) }
+            if (personalHuntsLoader.personalHunts.isEmpty()) personalHuntList.forEach {
                 personalHuntsLoader.createHunt(
                     it
                 )
@@ -48,7 +48,6 @@ class JSONHandler : DatabaseHandlerInterface {
         rewardLoader.reload()
         globalHuntsLoader.reload()
         globalHuntsPoolLoader.reload()
-        rewardStorageLoader.reload()
     }
 
     override fun getRewards(): List<HuntReward> {
@@ -92,20 +91,20 @@ class JSONHandler : DatabaseHandlerInterface {
         rewardStorageLoader.createRewardStorage(playerUUID, playerName)
     }
 
-    override fun getPlayerRewardStorage(playerUUID: String): RewardStorage? {
-        return rewardStorageLoader.rewardStorages.find { it.playerUUID == playerUUID }
+    override fun getPlayerRewardStorage(playerUUID: String): RewardStorage {
+        return rewardStorageLoader.getRewardStorage(playerUUID)
     }
 
     override fun addPlayerReward(playerUUID: String, reward: HuntReward) {
-        val rewardStorage = rewardStorageLoader.rewardStorages.find { it.playerUUID == playerUUID } ?: return
+        val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
         rewardStorage.rewards.add(reward)
-        rewardStorageLoader.save(playerUUID)
+        rewardStorageLoader.save(rewardStorage)
     }
 
     override fun removePlayerReward(playerUUID: String, index: Int) {
-        val rewardStorage = rewardStorageLoader.rewardStorages.find { it.playerUUID == playerUUID } ?: return
+        val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
         rewardStorage.rewards.removeAt(index)
-        rewardStorageLoader.save(playerUUID)
+        rewardStorageLoader.save(rewardStorage)
     }
 
     override fun ping() {

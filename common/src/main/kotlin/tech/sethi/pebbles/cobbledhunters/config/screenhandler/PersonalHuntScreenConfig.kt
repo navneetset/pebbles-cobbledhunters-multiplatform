@@ -31,7 +31,7 @@ object PersonalHuntScreenConfig {
                     material = "minecraft:lime_wool",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <green>Easy",
                         "<gray>Minimum Level: <green>0",
                         "Refreshing: {refreshing_time}",
@@ -46,7 +46,7 @@ object PersonalHuntScreenConfig {
                     material = "minecraft:yellow_wool",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <yellow>Medium",
                         "<gray>Minimum Level: <yellow>20",
                         "Refreshing: {refreshing_time}",
@@ -61,7 +61,7 @@ object PersonalHuntScreenConfig {
                     material = "minecraft:red_wool",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <red>Hard",
                         "<gray>Minimum Level: <red>50",
                         "Refreshing: {refreshing_time}",
@@ -76,7 +76,7 @@ object PersonalHuntScreenConfig {
                     material = "minecraft:black_wool",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <dark_red>Extreme",
                         "<gray>Minimum Level: <dark_red>100",
                         "Refreshing: {refreshing_time}",
@@ -91,7 +91,7 @@ object PersonalHuntScreenConfig {
                     material = "minecraft:purple_wool",
                     amount = 1,
                     nbt = null,
-                    lore = listOf(
+                    lore = mutableListOf(
                         "<gray>Difficulty: <light_purple>Godlike",
                         "<gray>Minimum Level: <light_purple>200",
                         "Refreshing: {refreshing_time}",
@@ -106,7 +106,7 @@ object PersonalHuntScreenConfig {
             material = "minecraft:gray_stained_glass_pane",
             amount = 1,
             nbt = null,
-            lore = listOf(
+            lore = mutableListOf(
                 " "
             )
         ), val emptySlots: List<Int> = listOf(1, 3, 5, 7)

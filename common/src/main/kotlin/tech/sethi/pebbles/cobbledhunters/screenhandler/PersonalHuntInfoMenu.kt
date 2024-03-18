@@ -9,6 +9,7 @@ import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntDetailScreenConfig
 import tech.sethi.pebbles.cobbledhunters.hunt.PersonalHuntHandler
@@ -130,9 +131,13 @@ class PersonalHuntInfoMenu(
             in startSlots -> {
                 if (huntTracker.active.not()) {
                     // check if hunt is expired
-                    PersonalHuntHandler.activateHunt(
+                    val activated = PersonalHuntHandler.activateHunt(
                         player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
                     )
+                    if (activated) {
+                        PM.sendText(player, LangConfig.langConfig.huntActivated)
+                    }
+                    else PM.sendText(player, LangConfig.langConfig.huntActivationFailed)
                     player.closeHandledScreen()
                 }
             }
@@ -166,21 +171,6 @@ class PersonalHuntInfoMenu(
 
         super.onClosed(player)
     }
-
-    fun getHuntByDifficulty(hunt: PersonalHunts?, difficulty: HuntDifficulties): HuntTracker? {
-        return when (difficulty) {
-            HuntDifficulties.EASY -> hunt?.easyHunt
-            HuntDifficulties.MEDIUM -> hunt?.mediumHunt
-            HuntDifficulties.HARD -> hunt?.hardHunt
-            HuntDifficulties.LEGENDARY -> hunt?.legendaryHunt
-            HuntDifficulties.GODLIKE -> hunt?.godlikeHunt
-        }
-    }
-
-    fun getHuntLoreByDifficulty(hunt: PersonalHunts?, difficulty: HuntDifficulties): MutableList<String> {
-        return hunt?.getHuntByDifficulty(difficulty)?.hunt?.description?.toMutableList() ?: mutableListOf()
-    }
-
 
     fun timeToPrettyString(time: Long): String {
         val seconds = time / 1000

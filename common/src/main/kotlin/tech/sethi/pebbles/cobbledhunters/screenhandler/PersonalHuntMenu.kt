@@ -126,12 +126,13 @@ class PersonalHuntMenu(
     }
 
     fun getHuntByDifficulty(hunt: PersonalHunts?, difficulty: HuntDifficulties): HuntTracker? {
+        val playerHunts = PersonalHuntHandler.getPersonalHunts(player.uuidAsString, player.name.string)
         return when (difficulty) {
-            HuntDifficulties.EASY -> hunt?.easyHunt
-            HuntDifficulties.MEDIUM -> hunt?.mediumHunt
-            HuntDifficulties.HARD -> hunt?.hardHunt
-            HuntDifficulties.LEGENDARY -> hunt?.legendaryHunt
-            HuntDifficulties.GODLIKE -> hunt?.godlikeHunt
+            HuntDifficulties.EASY -> playerHunts.easyHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.MEDIUM -> playerHunts.mediumHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.HARD -> playerHunts.hardHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.LEGENDARY -> playerHunts.legendaryHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.GODLIKE -> playerHunts.godlikeHunt?.let { PersonalHuntHandler.rolledHunts[it] }
         }
     }
 

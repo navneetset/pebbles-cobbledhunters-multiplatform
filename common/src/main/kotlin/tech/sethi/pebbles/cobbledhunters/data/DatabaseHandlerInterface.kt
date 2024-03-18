@@ -53,7 +53,3 @@ fun Pokemon.toHuntDisplayStack(hunt: Hunt): ItemStack {
 
     return pokemonStack
 }
-
-data class PlayerRewards(
-    val playerUUID: String, var playerName: String?, var rewards: MutableList<HuntReward> = mutableListOf()
-)

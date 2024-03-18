@@ -52,7 +52,7 @@ object ConfigHandler {
         val material: String,
         val amount: Int,
         val nbt: String?,
-        val lore: List<String> = listOf()
+        var lore: MutableList<String> = mutableListOf()
     ) {
         fun toItemStack(newLore: List<String>? = null, playerName: String? = null): ItemStack {
             val item = PM.getItem(material)

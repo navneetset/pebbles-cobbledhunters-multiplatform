@@ -32,4 +32,8 @@ object RewardConfigLoader {
         val file = File(rewardDirectory, "${reward.id}.json")
         file.writeText(configString)
     }
+
+    fun getRewardById(id: String): HuntReward? {
+        return rewards.find { it.id == id }
+    }
 }
