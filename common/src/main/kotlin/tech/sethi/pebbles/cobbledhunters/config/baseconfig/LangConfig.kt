@@ -27,9 +27,11 @@ object LangConfig {
         val expGained: String = "<gold>[CobbledHunters] <green>You have gained <gold>{exp} <green>exp",
         val partyJoinActiveHunt: String = "<gold>[CobbledHunters] <green>You have joined a party with an active hunt. You will not be able to start a hunt until the current hunt is completed. If you had an active hunt, it has been cancelled",
         val huntActivated: String = "<gold>[CobbledHunters] <green>Hunt started. Good luck!",
-        val huntActivationFailed: String = "<gold>[CobbledHunters] <red>Hunt activation failed. You may have an active hunt already",
-        val splitRewardLore: String = "<gold>Split Reward with Party ({party_size}x split)",
+        val huntActivationFailed: String = "<gold>[CobbledHunters] <red>Hunt activation failed.",
+        val splitRewardLore: String = "<gold>Reward shared with party <aqua>[{party_size}x split]<aqua>",
         val rewardAdded: String = "<gold>[CobbledHunters] <green>Reward added to your reward storage",
         val huntCancelled: String = "<gold>[CobbledHunters] <red>Hunt has been cancelled",
+        val huntAlreadyActive: String = "<gold>[CobbledHunters] <red>You already have an active hunt. Either finish or cancel it",
+        val huntExpired: String = "<gold>[CobbledHunters] <red>Hunt has already expired. Please pick another one.",
     )
 }

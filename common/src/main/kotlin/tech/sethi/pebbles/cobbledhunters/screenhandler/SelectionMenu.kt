@@ -36,7 +36,7 @@ class SelectionMenu(
             1.0f,
             player.blockPos,
             player.world,
-            8.0,
+            2.0,
             player
         )
     }
@@ -100,7 +100,7 @@ class SelectionMenu(
             }
 
             in rewardInventorySlots -> {
-
+                player.openHandledScreen(rewardStorageMenuScreenHandlerFactory(player))
                 return
             }
         }

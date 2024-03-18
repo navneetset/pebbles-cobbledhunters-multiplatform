@@ -36,8 +36,11 @@ class PersonalHuntMenu(
 
     val huntSlots = config.slots
 
-    val allSlots = huntSlots.map { it.slot }
     val emptySlots = config.emptySlots
+
+    val backSlots = config.backButtonSlots
+
+    val allSlots = huntSlots.map { it.slot } + backSlots
 
     var isOpen = true
 
@@ -123,6 +126,10 @@ class PersonalHuntMenu(
         emptySlots.forEach { slot ->
             inventory.setStack(slot, config.emptySlotItemStack.toItemStack())
         }
+
+        backSlots.forEach { slot ->
+            inventory.setStack(slot, config.backButtonStack.toItemStack())
+        }
     }
 
     fun getHuntByDifficulty(hunt: PersonalHunts?, difficulty: HuntDifficulties): HuntTracker? {
@@ -164,13 +171,15 @@ class PersonalHuntMenu(
         UnvalidatedSound.playToPlayer(
             Identifier("cobblemon", "pc.click"),
             SoundCategory.MASTER,
-            1.0f,
+            0.5f,
             1.0f,
             player!!.blockPos,
             player.world,
-            8.0,
+            2.0,
             player as ServerPlayerEntity
         )
+
+        if (backSlots.contains(slotIndex)) player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
 
         // check which difficulty was clicked
         val huntSlot = huntSlots.firstOrNull { it.slot == slotIndex } ?: return

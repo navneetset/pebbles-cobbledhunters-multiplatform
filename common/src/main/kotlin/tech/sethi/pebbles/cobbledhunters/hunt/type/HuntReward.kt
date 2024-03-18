@@ -1,6 +1,8 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.type
 
+import net.minecraft.server.network.ServerPlayerEntity
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
+import tech.sethi.pebbles.cobbledhunters.util.PM
 
 data class HuntReward(
     val id: String,
@@ -10,7 +12,26 @@ data class HuntReward(
     val displayItem: ConfigHandler.SerializedItemStack,
     var commands: List<String>,
     var message: String? = "You collected {display_item.name}",
-)
+) {
+    fun deepCopy(): HuntReward {
+        return HuntReward(
+            id, name, amount, splitable, displayItem.deepCopy(), commands, message
+        )
+    }
+
+    fun executeCommands(player: ServerPlayerEntity) {
+        for (command in commands) {
+            val replacedCommand = command.replace("{player_name}", player.name.string)
+            val replacedCommand2 = replacedCommand.replace("{amount}", amount.toString())
+            PM.runCommand(replacedCommand2)
+            val replacedMessage = displayItem.displayName?.let { message?.replace("{display_item.name}", it) }
+            val replacedMessage2 = replacedMessage?.replace("{amount}", amount.toString())
+            if (replacedMessage2 != null) {
+                PM.sendText(player, replacedMessage2)
+            }
+        }
+    }
+}
 
 val pokeballReward1 = HuntReward(
     "pokeball_16",
@@ -69,7 +90,11 @@ val pebblesReward1 = HuntReward(
     300,
     true,
     ConfigHandler.SerializedItemStack(
-        "300 <gold>Pebbles", "minecraft:feather", 1, "{CustomModelData:8}", lore = mutableListOf("Get rich or die trying!")
+        "300 <gold>Pebbles",
+        "minecraft:feather",
+        1,
+        "{CustomModelData:8}",
+        lore = mutableListOf("Get rich or die trying!")
     ),
     listOf(
         "padmin eco deposit {player_name} {amount}"

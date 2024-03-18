@@ -24,7 +24,8 @@ object PersonalHuntScreenConfig {
     }
 
     data class SelectionScreenConfig(
-        val title: String = "<blue>Personal Hunts", val slots: List<SlotConfig> = listOf(
+        val title: String = "<blue>Personal Hunts",
+        val slots: List<SlotConfig> = listOf(
             SlotConfig(
                 slot = 0, difficulty = HuntDifficulties.EASY, itemStack = ConfigHandler.SerializedItemStack(
                     displayName = "<green>Easy Hunt",
@@ -41,7 +42,7 @@ object PersonalHuntScreenConfig {
                     )
                 )
             ), SlotConfig(
-                slot = 2, difficulty = HuntDifficulties.MEDIUM, itemStack = ConfigHandler.SerializedItemStack(
+                slot = 1, difficulty = HuntDifficulties.MEDIUM, itemStack = ConfigHandler.SerializedItemStack(
                     displayName = "<yellow>Medium Hunt",
                     material = "minecraft:yellow_wool",
                     amount = 1,
@@ -56,7 +57,7 @@ object PersonalHuntScreenConfig {
                     )
                 )
             ), SlotConfig(
-                slot = 4, difficulty = HuntDifficulties.HARD, itemStack = ConfigHandler.SerializedItemStack(
+                slot = 2, difficulty = HuntDifficulties.HARD, itemStack = ConfigHandler.SerializedItemStack(
                     displayName = "<red>Hard Hunt",
                     material = "minecraft:red_wool",
                     amount = 1,
@@ -71,13 +72,13 @@ object PersonalHuntScreenConfig {
                     )
                 )
             ), SlotConfig(
-                slot = 6, difficulty = HuntDifficulties.LEGENDARY, itemStack = ConfigHandler.SerializedItemStack(
+                slot = 3, difficulty = HuntDifficulties.LEGENDARY, itemStack = ConfigHandler.SerializedItemStack(
                     displayName = "<dark_red>Legendary Hunt",
                     material = "minecraft:black_wool",
                     amount = 1,
                     nbt = null,
                     lore = mutableListOf(
-                        "<gray>Difficulty: <dark_red>Extreme",
+                        "<gray>Difficulty: <dark_red>Legendary",
                         "<gray>Minimum Level: <dark_red>100",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
@@ -86,7 +87,7 @@ object PersonalHuntScreenConfig {
                     )
                 )
             ), SlotConfig(
-                slot = 8, difficulty = HuntDifficulties.GODLIKE, itemStack = ConfigHandler.SerializedItemStack(
+                slot = 4, difficulty = HuntDifficulties.GODLIKE, itemStack = ConfigHandler.SerializedItemStack(
                     displayName = "<light_purple>Godlike Hunt",
                     material = "minecraft:purple_wool",
                     amount = 1,
@@ -101,7 +102,18 @@ object PersonalHuntScreenConfig {
                     )
                 )
             )
-        ), val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+        ),
+        val backButtonStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>Back",
+            material = "minecraft:gray_wool",
+            amount = 1,
+            nbt = null,
+            lore = mutableListOf(
+                " "
+            )
+        ),
+        val backButtonSlots: List<Int> = listOf(8),
+        val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             displayName = "<gray>",
             material = "minecraft:gray_stained_glass_pane",
             amount = 1,
@@ -109,7 +121,8 @@ object PersonalHuntScreenConfig {
             lore = mutableListOf(
                 " "
             )
-        ), val emptySlots: List<Int> = listOf(1, 3, 5, 7)
+        ),
+        val emptySlots: List<Int> = listOf(5, 6, 7)
     )
 
     data class SlotConfig(

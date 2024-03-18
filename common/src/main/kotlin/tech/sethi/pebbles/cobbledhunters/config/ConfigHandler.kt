@@ -6,10 +6,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
-import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
-import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntScreenConfig
-import tech.sethi.pebbles.cobbledhunters.config.screenhandler.ScreensReadMe
-import tech.sethi.pebbles.cobbledhunters.config.screenhandler.SelectionScreenConfig
+import tech.sethi.pebbles.cobbledhunters.config.screenhandler.*
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.util.PM
 
@@ -29,6 +26,8 @@ object ConfigHandler {
         SelectionScreenConfig
         GlobalHuntScreenConfig
         PersonalHuntScreenConfig
+        PersonalHuntDetailScreenConfig
+        RewardScreenConfig
 
 
         ScreensReadMe
@@ -45,6 +44,8 @@ object ConfigHandler {
         SelectionScreenConfig.reload()
         GlobalHuntScreenConfig.reload()
         PersonalHuntScreenConfig.reload()
+        PersonalHuntDetailScreenConfig.reload()
+        RewardScreenConfig.reload()
     }
 
     data class SerializedItemStack(
@@ -64,6 +65,12 @@ object ConfigHandler {
                 itemStack.setCustomName(PM.returnStyledText(displayName!!))
             }
             return itemStack
+        }
+
+        fun deepCopy(): SerializedItemStack {
+            return SerializedItemStack(
+                displayName, material, amount, nbt, lore.toMutableList()
+            )
         }
     }
 

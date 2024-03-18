@@ -10,6 +10,7 @@ import tech.sethi.pebbles.cobbledhunters.config.hunt.personal.PersonalHuntConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardStorageConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
+import java.util.*
 
 class JSONHandler : DatabaseHandlerInterface {
 
@@ -95,15 +96,15 @@ class JSONHandler : DatabaseHandlerInterface {
         return rewardStorageLoader.getRewardStorage(playerUUID)
     }
 
-    override fun addPlayerReward(playerUUID: String, reward: HuntReward) {
+    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>) {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
-        rewardStorage.rewards.add(reward)
+        rewards.forEach { rewardStorage.rewards[UUID.randomUUID().toString()] = it }
         rewardStorageLoader.save(rewardStorage)
     }
 
-    override fun removePlayerReward(playerUUID: String, index: Int) {
+    override fun removePlayerRewards(playerUUID: String, uuids: List<String>) {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
-        rewardStorage.rewards.removeAt(index)
+        uuids.forEach { rewardStorage.rewards.remove(it) }
         rewardStorageLoader.save(rewardStorage)
     }
 

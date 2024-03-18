@@ -21,8 +21,8 @@ interface DatabaseHandlerInterface {
 
     fun initPlayerRewardStorage(playerUUID: String, playerName: String)
     fun getPlayerRewardStorage(playerUUID: String): RewardStorage?
-    fun addPlayerReward(playerUUID: String, reward: HuntReward)
-    fun removePlayerReward(playerUUID: String, index: Int)
+    fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>)
+    fun removePlayerRewards(playerUUID: String, uuids: List<String>)
 
     fun ping()
     fun close()

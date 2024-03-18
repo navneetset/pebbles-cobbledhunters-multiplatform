@@ -151,7 +151,22 @@ object PersonalHuntHandler {
         val personalHunts = getPersonalHunts(playerUUID, playerName)
         val huntTracker = personalHunts.getHuntByDifficulty(difficulty) ?: return false
         if (huntTracker.active) return false
-        if (huntTracker.expireTime < System.currentTimeMillis()) return false
+        if (huntTracker.expireTime < System.currentTimeMillis()) {
+            PM.sendText(
+                PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntExpired
+            )
+            return false
+        }
+
+        // check if player has any active hunt
+        personalHunts.getHunts().forEach {
+            if (it?.active == true) {
+                PM.sendText(
+                    PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntAlreadyActive
+                )
+                return false
+            }
+        }
 
         startHunt(huntTracker)
         val bossBarTextWithProgress = createBossBarText(huntTracker)
@@ -276,6 +291,7 @@ object PersonalHuntHandler {
         val bossbar = activeBossbars[huntTracker.uuid]
         bossbar?.clearPlayers()
         activeBossbars.remove(huntTracker.uuid)
+        rolledHunts.remove(huntTracker.uuid)
     }
 
     fun rewardHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties) {
@@ -290,11 +306,14 @@ object PersonalHuntHandler {
         val baseRewards = baseRewardIds.map { RewardConfigLoader.getRewardById(it) }
 
         if (isInParty(playerUUID)) {
-            val partySize = PartyHandler.db.getPlayerParty(playerUUID)?.members?.size ?: 1
+            val party = PartyHandler.db.getPlayerParty(playerUUID)
+            val partySize = party?.members?.size ?: 1
             // split rolled rewards with splitable = true
-            val splitableReward = rolledRewards.filter { it?.splitable == true }
+            val splitableRolledReward = rolledRewards.filter { it?.splitable == true }.map { it?.deepCopy() }
             val nonSplitableReward = rolledRewards.filter { it?.splitable != true }
-            splitableReward.forEach {
+            val splitableGuaranteedReward = baseRewards.filter { it?.splitable == true }.map { it?.deepCopy() }
+            val nonSplitableGuaranteedReward = baseRewards.filter { it?.splitable != true }
+            splitableRolledReward.forEach {
                 it?.amount = it?.amount?.div(partySize) ?: 0
                 it?.displayItem!!.lore.add(
                     "<gray>(${
@@ -304,14 +323,27 @@ object PersonalHuntHandler {
                     })"
                 )
             }
-            val rewards = splitableReward + nonSplitableReward + baseRewards
+            splitableGuaranteedReward.forEach {
+                it?.amount = it?.amount?.div(partySize) ?: 0
+                it?.displayItem!!.lore.add(
+                    "<gray>(${
+                        LangConfig.langConfig.splitRewardLore.replace(
+                            "{party_size}", partySize.toString()
+                        )
+                    })"
+                )
+            }
+            val rewards = splitableRolledReward + nonSplitableReward + splitableGuaranteedReward + nonSplitableGuaranteedReward
 
             CoroutineScope(Dispatchers.IO).launch {
-                rewards.forEach { reward ->
-                    if (reward != null) {
-                        DatabaseHandler.db!!.addPlayerReward(playerUUID, reward)
-                    }
+                party?.members?.forEach {
+                    DatabaseHandler.db!!.addPlayerRewards(it.uuid, rewards.filterNotNull())
                 }
+            }
+        } else {
+            val rewards = rolledRewards + baseRewards
+            CoroutineScope(Dispatchers.IO).launch {
+                DatabaseHandler.db!!.addPlayerRewards(playerUUID, rewards.filterNotNull())
             }
         }
     }

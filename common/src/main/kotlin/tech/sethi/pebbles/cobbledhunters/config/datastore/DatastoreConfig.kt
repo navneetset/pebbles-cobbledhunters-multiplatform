@@ -44,7 +44,7 @@ object DatastoreConfig {
     }
 
     data class DatastoreConfig(
-        val datastore: DatastoreType = DatastoreType.MONGODB,
+        val datastore: DatastoreType = DatastoreType.JSON,
         val triggerAndRewardServer: Boolean = true
     )
 

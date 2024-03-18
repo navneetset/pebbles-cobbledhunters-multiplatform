@@ -44,7 +44,7 @@ object PersonalHuntDetailScreenConfig {
                 "Click to go back!"
             )
         ),
-        val huntInfoSlots: List<Int> = listOf(43),
+        val huntInfoSlots: List<Int> = listOf(44),
         val huntInfoSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             displayName = "<gray>Hunt Info", material = "minecraft:paper", amount = 1, nbt = null, lore = mutableListOf(
                 "<white><b>Hunt Info", "{hunt_info}"

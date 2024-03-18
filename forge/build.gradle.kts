@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+
 plugins {
     id("com.github.johnrengelman.shadow")
 }
@@ -84,9 +86,11 @@ tasks.shadowJar {
     exclude("architectury.common.json")
     exclude("com/google/gson/**/*")
     exclude("org/intellij/**/*")
+    exclude("org/jetbrains/**/*")
 
     relocate("net.kyori", "tech.sethi.pebbles.cobbledhunters.kyori")
-    relocate("META-INF/services", "META-INF/services/tech.sethi.pebbles.cobbledhunters")
+    transformers.add(ServiceFileTransformer())
+
 
 
     configurations = listOf(shadowCommon)
@@ -98,6 +102,7 @@ tasks.remapJar {
     inputFile.set(tasks.shadowJar.get().archiveFile)
     dependsOn(tasks.shadowJar)
     archiveClassifier.set(null as String?)
+    archiveClassifier.set("forge")
 }
 
 tasks.jar {

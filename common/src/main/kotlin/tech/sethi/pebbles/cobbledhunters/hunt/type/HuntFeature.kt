@@ -16,66 +16,66 @@ data class HuntFeature(
 ) {
     fun checkRequirement(pokemon: Pokemon): Boolean {
         val species = pokemon.species.resourceIdentifier.path
-        CobbledHunters.LOGGER.info("Checking requirement for $species and required species: ${this.species}")
+//        CobbledHunters.LOGGER.info("Checking requirement for $species and required species: ${this.species}")
         if (this.species != null && !this.species.contains(species)) {
             return false
         }
-        CobbledHunters.LOGGER.info("Passed species check")
-        CobbledHunters.LOGGER.info("--------------------------")
+//        CobbledHunters.LOGGER.info("Passed species check")
+//        CobbledHunters.LOGGER.info("--------------------------")
 
 
         val pokemonTypes = listOf(pokemon.primaryType.name, pokemon.secondaryType?.name)
-        CobbledHunters.LOGGER.info("Pokemon types: ${pokemonTypes}" + " and required type: ${this.type}")
+//        CobbledHunters.LOGGER.info("Pokemon types: ${pokemonTypes}" + " and required type: ${this.type}")
         if (this.type != null && !pokemonTypes.contains(this.type.name.toUpperCase())) {
             return false
         }
-        CobbledHunters.LOGGER.info("Passed type check")
+//        CobbledHunters.LOGGER.info("Passed type check")
 
 
-        CobbledHunters.LOGGER.info("Pokemon level: ${pokemon.level} and required level: ${this.levelRange}")
+//        CobbledHunters.LOGGER.info("Pokemon level: ${pokemon.level} and required level: ${this.levelRange}")
         if (pokemon.level !in this.levelRange.min..this.levelRange.max) {
             return false
         }
 
-        CobbledHunters.LOGGER.info("Passed level check")
+//        CobbledHunters.LOGGER.info("Passed level check")
         if (this.shiny && !pokemon.shiny) {
             return false
         }
-        CobbledHunters.LOGGER.info("Passed shiny check")
+//        CobbledHunters.LOGGER.info("Passed shiny check")
 
         val pokemonNature = pokemon.nature.name.path.toUpperCase()
-        CobbledHunters.LOGGER.info("Pokemon nature: $pokemonNature and required nature: ${this.nature?.name}")
+//        CobbledHunters.LOGGER.info("Pokemon nature: $pokemonNature and required nature: ${this.nature?.name}")
         if (this.nature != null && this.nature.name.toUpperCase() != pokemonNature) {
             return false
         }
-        CobbledHunters.LOGGER.info("Passed nature check")
+//        CobbledHunters.LOGGER.info("Passed nature check")
 
         val gender = pokemon.gender.name.toUpperCase()
-        CobbledHunters.LOGGER.info("Pokemon Gender: $gender and required gender: ${this.gender.name}")
+//        CobbledHunters.LOGGER.info("Pokemon Gender: $gender and required gender: ${this.gender.name}")
         if (this.gender != HuntGender.ANY && this.gender.name != gender) {
             return false
         }
 
         val ability = pokemon.ability.name
-        CobbledHunters.LOGGER.info("Pokemon Ability: $ability and required ability: ${this.ability}")
+//        CobbledHunters.LOGGER.info("Pokemon Ability: $ability and required ability: ${this.ability}")
         if (this.ability != null && this.ability != ability) {
             return false
         }
 
         val caughtBall = pokemon.caughtBall.item().pokeBall.name.toString()
         val requiredBall = pokeballMap[this.ball]
-        CobbledHunters.LOGGER.info("Pokemon Ball: $caughtBall and required ball: $requiredBall")
+//        CobbledHunters.LOGGER.info("Pokemon Ball: $caughtBall and required ball: $requiredBall")
         if (this.ball != null && requiredBall != null && caughtBall != requiredBall) {
             return false
         }
 
         val form = pokemon.form.name
-        CobbledHunters.LOGGER.info("Pokemon Form: $form and required form: ${this.form}")
+//        CobbledHunters.LOGGER.info("Pokemon Form: $form and required form: ${this.form}")
         if (this.form != null && this.form != form) {
             return false
         }
 
-        CobbledHunters.LOGGER.info("Passed all checks")
+//        CobbledHunters.LOGGER.info("Passed all checks")
 
         return true
     }

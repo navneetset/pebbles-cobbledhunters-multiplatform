@@ -34,7 +34,7 @@ object HuntCommand {
                 .executes { context: CommandContext<ServerCommandSource> ->
                     ConfigHandler.reload()
 
-                    EconomyHandler.reload()
+//                    EconomyHandler.reload()
 
                     DatabaseHandler.reload()
 

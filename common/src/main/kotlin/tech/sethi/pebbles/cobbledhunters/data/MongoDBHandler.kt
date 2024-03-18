@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
+import java.util.*
 
 class MongoDBHandler : DatabaseHandlerInterface {
 
@@ -107,17 +108,16 @@ class MongoDBHandler : DatabaseHandlerInterface {
         return playerRewardStorageCollection.find(Filters.eq("playerUUID", playerUUID)).first()
     }
 
-    override fun addPlayerReward(playerUUID: String, reward: HuntReward) {
+    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>) {
         playerRewardStorageCollection.updateOne(
             Filters.eq("playerUUID", playerUUID),
-            Updates.push("rewards", reward)
+            Updates.pushEach("rewards", rewards.map { it.copy(id = UUID.randomUUID().toString()) })
         )
     }
 
-    override fun removePlayerReward(playerUUID: String, index: Int) {
+    override fun removePlayerRewards(playerUUID: String, uuids: List<String>) {
         playerRewardStorageCollection.updateOne(
-            Filters.eq("playerUUID", playerUUID),
-            Updates.pull("rewards", index)
+            Filters.eq("playerUUID", playerUUID), Updates.pullAll("rewards", uuids)
         )
     }
 
