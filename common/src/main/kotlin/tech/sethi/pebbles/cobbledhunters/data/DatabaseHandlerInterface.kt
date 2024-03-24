@@ -3,6 +3,7 @@ package tech.sethi.pebbles.cobbledhunters.data
 import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.Pokemon
 import net.minecraft.item.ItemStack
+import tech.sethi.pebbles.cobbledhunters.config.exp.ExpConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 
@@ -21,8 +22,12 @@ interface DatabaseHandlerInterface {
 
     fun initPlayerRewardStorage(playerUUID: String, playerName: String)
     fun getPlayerRewardStorage(playerUUID: String): RewardStorage?
-    fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>)
+    fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>, exp: Int = 0)
     fun removePlayerRewards(playerUUID: String, uuids: List<String>)
+    fun removePlayerExp(playerUUID: String)
+    fun initPlayerExpProgress(playerUUID: String, playerName: String)
+    fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress?
+    fun addPlayerExp(playerUUID: String, exp: Int)
 
     fun ping()
     fun close()

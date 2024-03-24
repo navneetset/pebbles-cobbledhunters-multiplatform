@@ -23,7 +23,7 @@ object RewardScreenConfig {
 
     data class RewardScreenConfig(
         val title: String = "<blue>Reward Storage",
-        val emptySlots: List<Int> = listOf(20, 21, 22, 23, 24, 25),
+        val emptySlots: List<Int> = listOf(20, 21, 22, 23, 24),
         val emptySlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             "", "minecraft:gray_stained_glass_pane", 1, null, mutableListOf(
             )
@@ -46,6 +46,13 @@ object RewardScreenConfig {
             "<gray>Next Page", "minecraft:arrow", 1, null, mutableListOf(
                 "Click to go to the next page!"
             )
-        )
+        ),
+        val expSlots: List<Int> = listOf(25),
+        val expSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            "<gray>Exp", "minecraft:experience_bottle", 1, null, mutableListOf(
+                "Click to claim exp!",
+                "<blue>Exp: <aqua>{exp}"
+            )
+        ),
     )
 }

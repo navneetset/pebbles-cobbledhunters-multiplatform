@@ -22,10 +22,10 @@ import tech.sethi.pebbles.partyapi.eventlistener.LeavePartyEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-object PersonalHuntHandler {
-    val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
-    val rolledHunts = ConcurrentHashMap<String, HuntTracker>()
-    val activeBossbars = ConcurrentHashMap<String, ServerBossBar>()
+object PersonalHuntHandler : AbstractPersonalHuntHandler() {
+    override val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
+    override val rolledHunts = ConcurrentHashMap<String, HuntTracker>()
+    override val activeBossbars = ConcurrentHashMap<String, ServerBossBar>()
 
     init {
         PlayerEvent.PLAYER_JOIN.register { player ->
@@ -64,7 +64,6 @@ object PersonalHuntHandler {
 
 
         if (BaseConfig.baseConfig.enablePartyHunts) {
-
             LeavePartyEvent.EVENT.register(object : LeavePartyEvent {
                 override fun onLeaveParty(playerUuid: String) {
                     // end active hunt if player leaves party
@@ -333,17 +332,20 @@ object PersonalHuntHandler {
                     })"
                 )
             }
-            val rewards = splitableRolledReward + nonSplitableReward + splitableGuaranteedReward + nonSplitableGuaranteedReward
+            val rewards =
+                splitableRolledReward + nonSplitableReward + splitableGuaranteedReward + nonSplitableGuaranteedReward
+
+            val expPerPerson = huntTracker.hunt.experience.div(partySize)
 
             CoroutineScope(Dispatchers.IO).launch {
                 party?.members?.forEach {
-                    DatabaseHandler.db!!.addPlayerRewards(it.uuid, rewards.filterNotNull())
+                    DatabaseHandler.db!!.addPlayerRewards(it.uuid, rewards.filterNotNull(), expPerPerson)
                 }
             }
         } else {
             val rewards = rolledRewards + baseRewards
             CoroutineScope(Dispatchers.IO).launch {
-                DatabaseHandler.db!!.addPlayerRewards(playerUUID, rewards.filterNotNull())
+                DatabaseHandler.db!!.addPlayerRewards(playerUUID, rewards.filterNotNull(), huntTracker.hunt.experience)
             }
         }
     }

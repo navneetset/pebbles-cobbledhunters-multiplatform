@@ -4,11 +4,12 @@ import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import tech.sethi.pebbles.cobbledhunters.config.exp.ExpConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntPoolConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.personal.PersonalHuntConfigLoader
-import tech.sethi.pebbles.cobbledhunters.config.reward.RewardStorageConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
+import tech.sethi.pebbles.cobbledhunters.config.reward.RewardStorageConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import java.util.*
 
@@ -25,6 +26,7 @@ class JSONHandler : DatabaseHandlerInterface {
     var personalHuntsSessions = mutableMapOf<String, PersonalHuntSession>()
 
     val rewardStorageLoader = RewardStorageConfigLoader
+    val expProgressLoader = ExpConfigLoader
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -41,6 +43,7 @@ class JSONHandler : DatabaseHandlerInterface {
         PlayerEvent.PLAYER_JOIN.register { player ->
             CoroutineScope(Dispatchers.IO).launch {
                 initPlayerRewardStorage(player.uuid.toString(), player.name.string)
+                initPlayerExpProgress(player.uuid.toString(), player.name.string)
             }
         }
     }
@@ -96,8 +99,9 @@ class JSONHandler : DatabaseHandlerInterface {
         return rewardStorageLoader.getRewardStorage(playerUUID)
     }
 
-    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>) {
+    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>, exp: Int) {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
+        rewardStorage.exp += exp
         rewards.forEach { rewardStorage.rewards[UUID.randomUUID().toString()] = it }
         rewardStorageLoader.save(rewardStorage)
     }
@@ -106,6 +110,26 @@ class JSONHandler : DatabaseHandlerInterface {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
         uuids.forEach { rewardStorage.rewards.remove(it) }
         rewardStorageLoader.save(rewardStorage)
+    }
+
+    override fun removePlayerExp(playerUUID: String) {
+        val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
+        rewardStorage.exp = 0
+        rewardStorageLoader.save(rewardStorage)
+    }
+
+    override fun initPlayerExpProgress(playerUUID: String, playerName: String) {
+        expProgressLoader.createExpProgress(playerUUID, playerName)
+    }
+
+    override fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress {
+        return expProgressLoader.getExp(playerUUID)
+    }
+
+    override fun addPlayerExp(playerUUID: String, exp: Int) {
+        val expProgress = expProgressLoader.getExp(playerUUID)
+        expProgress.exp += exp
+        expProgressLoader.save(expProgress)
     }
 
     override fun ping() {

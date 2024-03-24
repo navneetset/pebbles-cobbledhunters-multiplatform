@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
+import tech.sethi.pebbles.cobbledhunters.config.exp.ExpConfigLoader
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import java.util.*
 
@@ -108,10 +109,13 @@ class MongoDBHandler : DatabaseHandlerInterface {
         return playerRewardStorageCollection.find(Filters.eq("playerUUID", playerUUID)).first()
     }
 
-    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>) {
+    override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>, exp: Int) {
         playerRewardStorageCollection.updateOne(
             Filters.eq("playerUUID", playerUUID),
-            Updates.pushEach("rewards", rewards.map { it.copy(id = UUID.randomUUID().toString()) })
+            Updates.pushEach("rewards", rewards.map { it.copy(id = UUID.randomUUID().toString()) }),
+        )
+        playerRewardStorageCollection.updateOne(
+            Filters.eq("playerUUID", playerUUID), Updates.inc("exp", exp)
         )
     }
 
@@ -119,6 +123,22 @@ class MongoDBHandler : DatabaseHandlerInterface {
         playerRewardStorageCollection.updateOne(
             Filters.eq("playerUUID", playerUUID), Updates.pullAll("rewards", uuids)
         )
+    }
+
+    override fun removePlayerExp(playerUUID: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun initPlayerExpProgress(playerUUID: String, playerName: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress? {
+        TODO("Not yet implemented")
+    }
+
+    override fun addPlayerExp(playerUUID: String, exp: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun ping() {

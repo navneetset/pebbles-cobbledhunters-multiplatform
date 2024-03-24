@@ -29,10 +29,12 @@ class RewardStorageMenu(
     val backSlots = config.backSlots
     val navPrevSlots = config.navPrevSlots
     val navNextSlots = config.navNextSlots
+    val expSlots = config.expSlots
 
     val allSlots = rewardSlots + backSlots + navPrevSlots + navNextSlots
+    val rewardStorage = DatabaseHandler.db!!.getPlayerRewardStorage(player.uuidAsString)
 
-    val rewardsCache = DatabaseHandler.db!!.getPlayerRewardStorage(player.uuidAsString)!!.rewards
+    val rewardsCache = rewardStorage!!.rewards
 
     val totalPages = (rewardsCache.size / 18) + 1
     var currentPage = 1
@@ -85,6 +87,15 @@ class RewardStorageMenu(
             val stack = config.navNextSlotStack.toItemStack()
             inventory.setStack(slot, stack)
         }
+
+        expSlots.forEach { slot ->
+            val serializedStack = config.expSlotStack.deepCopy()
+            serializedStack.lore =
+                serializedStack.lore.map { it.replace("{exp}", rewardStorage?.exp.toString()) }.toMutableList()
+            val stack = serializedStack.toItemStack()
+
+            inventory.setStack(slot, stack)
+        }
     }
 
 
@@ -129,6 +140,15 @@ class RewardStorageMenu(
             in navNextSlots -> {
                 if (currentPage < totalPages) {
                     currentPage++
+                    setupPage()
+                }
+            }
+
+            in expSlots -> {
+                if (rewardStorage!!.exp > 0) {
+                    DatabaseHandler.db!!.addPlayerExp(player.uuidAsString, rewardStorage.exp)
+                    rewardStorage.exp = 0
+                    DatabaseHandler.db!!.removePlayerExp(player.uuidAsString)
                     setupPage()
                 }
             }
