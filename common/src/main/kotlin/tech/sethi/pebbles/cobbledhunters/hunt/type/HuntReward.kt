@@ -278,7 +278,7 @@ val maxPotionReward = HuntReward(
 )
 
 val hpUpReward1 = HuntReward(
-    "hp_up", "HP Up", 4, true, ConfigHandler.SerializedItemStack(
+    "hp_up_1", "HP Up", 4, true, ConfigHandler.SerializedItemStack(
         "<red>HP Up", "cobblemon:hp_up", 4, null
     ), listOf(
         "give {player_name} cobblemon:hp_up {amount}"
@@ -286,7 +286,7 @@ val hpUpReward1 = HuntReward(
 )
 
 val hpUpReward2 = HuntReward(
-    "hp_up", "HP Up", 8, true, ConfigHandler.SerializedItemStack(
+    "hp_up_2", "HP Up", 8, true, ConfigHandler.SerializedItemStack(
         "<red>HP Up", "cobblemon:hp_up", 8, null
     ), listOf(
         "give {player_name} cobblemon:hp_up {amount}"
@@ -294,7 +294,7 @@ val hpUpReward2 = HuntReward(
 )
 
 val hpUpReward3 = HuntReward(
-    "hp_up", "HP Up", 16, true, ConfigHandler.SerializedItemStack(
+    "hp_up_3", "HP Up", 16, true, ConfigHandler.SerializedItemStack(
         "<red>HP Up", "cobblemon:hp_up", 16, null
     ), listOf(
         "give {player_name} cobblemon:hp_up {amount}"
@@ -302,7 +302,7 @@ val hpUpReward3 = HuntReward(
 )
 
 val proteinReward = HuntReward(
-    "protein", "Protein", 4, true, ConfigHandler.SerializedItemStack(
+    "protein_1", "Protein", 4, true, ConfigHandler.SerializedItemStack(
         "<yellow>Protein", "cobblemon:protein", 4, null
     ), listOf(
         "give {player_name} cobblemon:protein {amount}"
@@ -310,7 +310,7 @@ val proteinReward = HuntReward(
 )
 
 val proteinReward2 = HuntReward(
-    "protein", "Protein", 8, true, ConfigHandler.SerializedItemStack(
+    "protein_2", "Protein", 8, true, ConfigHandler.SerializedItemStack(
         "<yellow>Protein", "cobblemon:protein", 8, null
     ), listOf(
         "give {player_name} cobblemon:protein {amount}"
@@ -318,7 +318,7 @@ val proteinReward2 = HuntReward(
 )
 
 val proteinReward3 = HuntReward(
-    "protein", "Protein", 16, true, ConfigHandler.SerializedItemStack(
+    "protein_3", "Protein", 16, true, ConfigHandler.SerializedItemStack(
         "<yellow>Protein", "cobblemon:protein", 16, null
     ), listOf(
         "give {player_name} cobblemon:protein {amount}"
@@ -326,7 +326,7 @@ val proteinReward3 = HuntReward(
 )
 
 val ironReward1 = HuntReward(
-    "iron", "Iron", 4, true, ConfigHandler.SerializedItemStack(
+    "iron_1", "Iron", 4, true, ConfigHandler.SerializedItemStack(
         "<gray>Iron", "cobblemon:iron", 4, null
     ), listOf(
         "give {player_name} cobblemon:iron {amount}"
@@ -334,7 +334,7 @@ val ironReward1 = HuntReward(
 )
 
 val ironReward2 = HuntReward(
-    "iron", "Iron", 8, true, ConfigHandler.SerializedItemStack(
+    "iron_2", "Iron", 8, true, ConfigHandler.SerializedItemStack(
         "<gray>Iron", "cobblemon:iron", 8, null
     ), listOf(
         "give {player_name} cobblemon:iron {amount}"
@@ -342,7 +342,7 @@ val ironReward2 = HuntReward(
 )
 
 val ironReward3 = HuntReward(
-    "iron", "Iron", 16, true, ConfigHandler.SerializedItemStack(
+    "iron_3", "Iron", 16, true, ConfigHandler.SerializedItemStack(
         "<gray>Iron", "cobblemon:iron", 16, null
     ), listOf(
         "give {player_name} cobblemon:iron {amount}"
@@ -350,7 +350,7 @@ val ironReward3 = HuntReward(
 )
 
 val calciumReward1 = HuntReward(
-    "calcium", "Calcium", 4, true, ConfigHandler.SerializedItemStack(
+    "calcium_1", "Calcium", 4, true, ConfigHandler.SerializedItemStack(
         "<white>Calcium", "cobblemon:calcium", 4, null
     ), listOf(
         "give {player_name} cobblemon:calcium {amount}"
@@ -358,7 +358,7 @@ val calciumReward1 = HuntReward(
 )
 
 val calciumReward2 = HuntReward(
-    "calcium", "Calcium", 8, true, ConfigHandler.SerializedItemStack(
+    "calcium_2", "Calcium", 8, true, ConfigHandler.SerializedItemStack(
         "<white>Calcium", "cobblemon:calcium", 8, null
     ), listOf(
         "give {player_name} cobblemon:calcium {amount}"
@@ -366,7 +366,7 @@ val calciumReward2 = HuntReward(
 )
 
 val calciumReward3 = HuntReward(
-    "calcium", "Calcium", 16, true, ConfigHandler.SerializedItemStack(
+    "calcium_3", "Calcium", 16, true, ConfigHandler.SerializedItemStack(
         "<white>Calcium", "cobblemon:calcium", 16, null
     ), listOf(
         "give {player_name} cobblemon:calcium {amount}"
@@ -374,7 +374,7 @@ val calciumReward3 = HuntReward(
 )
 
 val zincReward1 = HuntReward(
-    "zinc", "Zinc", 4, true, ConfigHandler.SerializedItemStack(
+    "zinc_1", "Zinc", 4, true, ConfigHandler.SerializedItemStack(
         "<gray>Zinc", "cobblemon:zinc", 4, null
     ), listOf(
         "give {player_name} cobblemon:zinc {amount}"
@@ -382,7 +382,7 @@ val zincReward1 = HuntReward(
 )
 
 val zincReward2 = HuntReward(
-    "zinc", "Zinc", 8, true, ConfigHandler.SerializedItemStack(
+    "zinc_2", "Zinc", 8, true, ConfigHandler.SerializedItemStack(
         "<gray>Zinc", "cobblemon:zinc", 8, null
     ), listOf(
         "give {player_name} cobblemon:zinc {amount}"
@@ -390,7 +390,7 @@ val zincReward2 = HuntReward(
 )
 
 val zincReward3 = HuntReward(
-    "zinc", "Zinc", 16, true, ConfigHandler.SerializedItemStack(
+    "zinc_3", "Zinc", 16, true, ConfigHandler.SerializedItemStack(
         "<gray>Zinc", "cobblemon:zinc", 16, null
     ), listOf(
         "give {player_name} cobblemon:zinc {amount}"
@@ -398,7 +398,7 @@ val zincReward3 = HuntReward(
 )
 
 val carbosReward1 = HuntReward(
-    "carbos", "Carbos", 4, true, ConfigHandler.SerializedItemStack(
+    "carbos_1", "Carbos", 4, true, ConfigHandler.SerializedItemStack(
         "<white>Carbos", "cobblemon:carbos", 4, null
     ), listOf(
         "give {player_name} cobblemon:carbos {amount}"
@@ -406,7 +406,7 @@ val carbosReward1 = HuntReward(
 )
 
 val carbosReward2 = HuntReward(
-    "carbos", "Carbos", 8, true, ConfigHandler.SerializedItemStack(
+    "carbos_2", "Carbos", 8, true, ConfigHandler.SerializedItemStack(
         "<white>Carbos", "cobblemon:carbos", 8, null
     ), listOf(
         "give {player_name} cobblemon:carbos {amount}"
@@ -414,7 +414,7 @@ val carbosReward2 = HuntReward(
 )
 
 val carbosReward3 = HuntReward(
-    "carbos", "Carbos", 16, true, ConfigHandler.SerializedItemStack(
+    "carbos_3", "Carbos", 16, true, ConfigHandler.SerializedItemStack(
         "<white>Carbos", "cobblemon:carbos", 16, null
     ), listOf(
         "give {player_name} cobblemon:carbos {amount}"
@@ -422,7 +422,7 @@ val carbosReward3 = HuntReward(
 )
 
 val ppUpReward1 = HuntReward(
-    "pp_up", "PP Up", 4, true, ConfigHandler.SerializedItemStack(
+    "pp_up_1", "PP Up", 4, true, ConfigHandler.SerializedItemStack(
         "<green>PP Up", "cobblemon:pp_up", 4, null
     ), listOf(
         "give {player_name} cobblemon:pp_up {amount}"
@@ -430,7 +430,7 @@ val ppUpReward1 = HuntReward(
 )
 
 val ppUpReward2 = HuntReward(
-    "pp_up", "PP Up", 8, true, ConfigHandler.SerializedItemStack(
+    "pp_up_2", "PP Up", 8, true, ConfigHandler.SerializedItemStack(
         "<green>PP Up", "cobblemon:pp_up", 8, null
     ), listOf(
         "give {player_name} cobblemon:pp_up {amount}"
@@ -438,7 +438,7 @@ val ppUpReward2 = HuntReward(
 )
 
 val ppUpReward3 = HuntReward(
-    "pp_up", "PP Up", 16, true, ConfigHandler.SerializedItemStack(
+    "pp_up_3", "PP Up", 16, true, ConfigHandler.SerializedItemStack(
         "<green>PP Up", "cobblemon:pp_up", 16, null
     ), listOf(
         "give {player_name} cobblemon:pp_up {amount}"

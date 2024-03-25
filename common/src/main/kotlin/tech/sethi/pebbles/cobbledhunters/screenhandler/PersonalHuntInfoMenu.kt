@@ -78,11 +78,8 @@ class PersonalHuntInfoMenu(
         rewardSlots.forEach { slot ->
             if (allRewards.size > slot) {
                 val reward = allRewards[slot]
-                CobbledHunters.LOGGER.info("Reward: $reward")
                 val rewardSerializedStack = reward.displayItem.deepCopy()
-                CobbledHunters.LOGGER.info("Reward serialized stack: $rewardSerializedStack")
                 if (BaseConfig.config.enablePartyHunts && reward.splitable == true) {
-                    CobbledHunters.LOGGER.info("Reward is splittable")
                     rewardSerializedStack.displayName = rewardSerializedStack.displayName + " " + config.splittableText
                 }
 
