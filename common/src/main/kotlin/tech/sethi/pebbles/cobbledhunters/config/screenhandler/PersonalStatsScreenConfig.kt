@@ -24,8 +24,8 @@ object PersonalStatsScreenConfig {
 
     data class PersonalStatsScreen(
         val title: String = "<blue>Personal Stats",
-        val playerHeadSlot: Int = 10,
-        val levelSlots: List<Int> = listOf(11),
+        val playerHeadSlot: Int = 12,
+        val levelSlots: List<Int> = listOf(14),
         val levelSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             displayName = "<gray>Level",
             material = "minecraft:experience_bottle",
@@ -36,8 +36,14 @@ object PersonalStatsScreenConfig {
                 "<gray>Experience: <light_purple>{exp}",
             )
         ),
-        val emptySlots: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26),
-        val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+        val backSlots: List<Int> = listOf(18),
+        val backSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>Back", material = "minecraft:gray_wool", amount = 1, nbt = null, lore = mutableListOf(
+                "Click to go back!"
+            )
+        ),
+        val emptySlots: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 19, 20, 21, 22, 23, 24, 25, 26),
+        val emptySlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             displayName = "<gray>",
             material = "minecraft:blue_stained_glass_pane",
             amount = 1,

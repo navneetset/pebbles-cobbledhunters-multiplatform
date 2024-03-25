@@ -188,7 +188,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         if (!hasEnoughBalance(playerUUID, huntTracker)) {
             PM.sendText(
                 PM.getPlayer(playerName) ?: return false,
-                LangConfig.langConfig.notEnoughBalance.replace("{currency}", EconomyConfig.economyConfig.currencyName)
+                LangConfig.langConfig.notEnoughBalance.replace("{currency}", EconomyConfig.config.currencyName)
             )
             return false
         }

@@ -10,7 +10,7 @@ object EconomyConfig {
 
     private val economyConfigHandler = ConfigFileHandler(EconomyConfig::class.java, economyConfigFile, gson)
 
-    var economyConfig = EconomyConfig()
+    var config = EconomyConfig()
 
     init {
         reload()
@@ -19,7 +19,7 @@ object EconomyConfig {
 
     fun reload() {
         economyConfigHandler.reload()
-        economyConfig = economyConfigHandler.config
+        config = economyConfigHandler.config
     }
 
 

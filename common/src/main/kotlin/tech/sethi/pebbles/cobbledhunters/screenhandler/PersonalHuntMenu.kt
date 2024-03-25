@@ -112,8 +112,8 @@ class PersonalHuntMenu(
                 }
 
                 lore.replaceAll { it.replace("{cost}", currentHunt.hunt.cost.toString()) }
-                lore.replaceAll { it.replace("{currency}", EconomyConfig.economyConfig.currencyName) }
-                lore.replaceAll { it.replace("{currency_symbol}", EconomyConfig.economyConfig.currencySymbol) }
+                lore.replaceAll { it.replace("{currency}", EconomyConfig.config.currencyName) }
+                lore.replaceAll { it.replace("{currency_symbol}", EconomyConfig.config.currencySymbol) }
 
                 val remainingTime = currentHunt.endTime?.minus(System.currentTimeMillis())
                 if (remainingTime != null && remainingTime > 0) {

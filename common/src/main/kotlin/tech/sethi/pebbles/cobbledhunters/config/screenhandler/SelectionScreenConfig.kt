@@ -36,6 +36,7 @@ object SelectionScreenConfig {
                 "<yellow>Click on a hunt to view its details.",
                 "",
                 "<gray>Be the first to complete the hunt to earn rewards!",
+                "<red>[Coming Soon]"
             )
         ),
         val personalHuntsSlots: List<Int> = listOf(2),
@@ -60,7 +61,7 @@ object SelectionScreenConfig {
         ),
         val leaderboardSlot: List<Int> = listOf(4),
         val leaderboardStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            "<gold>Leaderboard", "minecraft:paper", 1, null, mutableListOf()
+            "<gold>Leaderboard", "minecraft:paper", 1, null, mutableListOf("<yellow>Coming Soon!")
         ),
         val personalStatsSlot: List<Int> = listOf(6),
         val personalStatsStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(

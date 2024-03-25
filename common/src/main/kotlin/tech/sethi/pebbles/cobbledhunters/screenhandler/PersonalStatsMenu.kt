@@ -2,6 +2,8 @@ package tech.sethi.pebbles.cobbledhunters.screenhandler
 
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.SimpleInventory
+import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
 import net.minecraft.screen.GenericContainerScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory
@@ -9,22 +11,21 @@ import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
-import tech.sethi.pebbles.cobbledhunters.config.screenhandler.SelectionScreenConfig
+import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalStatsScreenConfig
+import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 
-class SelectionMenu(
+class PersonalStatsMenu(
     syncId: Int, val player: ServerPlayerEntity
-) : GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X1, syncId, player.inventory, SimpleInventory(9 * 1), 1) {
+) : GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X3, syncId, player.inventory, SimpleInventory(9 * 3), 3) {
 
-    val config = SelectionScreenConfig.config
+    val config = PersonalStatsScreenConfig.config
 
     val emptySlots = config.emptySlots
-    val globalHuntsSlots = config.globalHuntsSlots
-    val personalHuntsSlots = config.personalHuntsSlots
-    val leaderboardSlots = config.leaderboardSlot
-    val personalStatsSlot = config.personalStatsSlot
-    val rewardInventorySlots = config.rewardInventorySlots
+    val playerHeadSlot = config.playerHeadSlot
+    val levelSlots = config.levelSlots
+    val backSlots = config.backSlots
 
     init {
         setupPage()
@@ -46,24 +47,25 @@ class SelectionMenu(
             inventory.setStack(slot, config.emptySlotStack.toItemStack())
         }
 
-        globalHuntsSlots.forEach { slot ->
-            inventory.setStack(slot, config.globalHuntsStack.toItemStack())
+        val playerHead = ItemStack(Items.PLAYER_HEAD)
+        playerHead.setCustomName(PM.returnStyledText("<yellow>${player.name.string}</yellow>"))
+        playerHead.orCreateNbt.putString("SkullOwner", player.name.string)
+        inventory.setStack(playerHeadSlot, playerHead)
+
+        levelSlots.forEach { slot ->
+            val serializedLevelStack = config.levelSlotStack.deepCopy()
+            serializedLevelStack.lore = serializedLevelStack.lore.map {
+                it.replace("{level}", "<yellow>${DatabaseHandler.db!!.playerLevel(player.uuidAsString)}</yellow>")
+                    .replace(
+                        "{exp}",
+                        "<yellow>${DatabaseHandler.db!!.getPlayerExpProgress(player.uuidAsString)?.exp.toString()}</yellow>"
+                    )
+            }.toMutableList()
+            inventory.setStack(slot, serializedLevelStack.toItemStack())
         }
 
-        personalHuntsSlots.forEach { slot ->
-            inventory.setStack(slot, config.personalHuntsStack.toItemStack())
-        }
-
-        leaderboardSlots.forEach { slot ->
-            inventory.setStack(slot, config.leaderboardStack.toItemStack())
-        }
-
-        personalStatsSlot.forEach { slot ->
-            inventory.setStack(slot, config.personalStatsStack.toItemStack())
-        }
-
-        rewardInventorySlots.forEach { slot ->
-            inventory.setStack(slot, config.rewardInventory.toItemStack(playerName = player.name.string))
+        backSlots.forEach { slot ->
+            inventory.setStack(slot, config.backSlotStack.toItemStack())
         }
     }
 
@@ -84,29 +86,8 @@ class SelectionMenu(
         )
 
         when (slotIndex) {
-            in globalHuntsSlots -> {
-//                player.openHandledScreen(globalHuntMenuScreenHandlerFactory(player))
-                return
-            }
-
-            in personalHuntsSlots -> {
-                player.openHandledScreen(personalHuntMenuScreenHandlerFactory(player))
-                return
-            }
-
-            in leaderboardSlots -> {
-
-                return
-            }
-
-            in personalStatsSlot -> {
-                player.openHandledScreen(personalStatsMenuScreenHandlerFactory(player))
-                return
-            }
-
-            in rewardInventorySlots -> {
-                player.openHandledScreen(rewardStorageMenuScreenHandlerFactory(player))
-                return
+            in backSlots -> {
+                player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
             }
         }
 
@@ -129,7 +110,7 @@ class SelectionMenu(
 
 }
 
-fun selectionMenuScreenHandlerFactory(player: PlayerEntity) =
+fun personalStatsMenuScreenHandlerFactory(player: PlayerEntity) =
     SimpleNamedScreenHandlerFactory({ syncId, playerInventory, _ ->
-        SelectionMenu(syncId, player as ServerPlayerEntity)
-    }, PM.returnStyledText(SelectionScreenConfig.config.title))
+        PersonalStatsMenu(syncId, player as ServerPlayerEntity)
+    }, PM.returnStyledText(PersonalStatsScreenConfig.config.title))

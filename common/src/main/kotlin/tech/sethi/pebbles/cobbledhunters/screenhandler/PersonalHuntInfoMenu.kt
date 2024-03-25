@@ -9,7 +9,6 @@ import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
-import tech.sethi.pebbles.cobbledhunters.CobbledHunters
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
@@ -131,8 +130,8 @@ class PersonalHuntInfoMenu(
             val costSerializedStack = config.costSlotStack.deepCopy()
             costSerializedStack.displayName =
                 costSerializedStack.displayName?.replace("{cost}", hunt.cost.toString())?.replace(
-                    "{currency_symbol}", EconomyConfig.economyConfig.currencySymbol
-                )?.replace("{currency}", EconomyConfig.economyConfig.currencyName)
+                    "{currency_symbol}", EconomyConfig.config.currencySymbol
+                )?.replace("{currency}", EconomyConfig.config.currencyName)
             inventory.setStack(slot, costSerializedStack.toItemStack())
         }
 

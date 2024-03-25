@@ -12,7 +12,7 @@ object EconomyHandler {
     }
 
     fun reload() {
-        val economyConfig = EconomyConfig.economyConfig
+        val economyConfig = EconomyConfig.config
         try {
             economy = when (economyConfig.economy) {
                 EconomyConfig.EconomyType.PEBBLES -> PebblesEconomy()
