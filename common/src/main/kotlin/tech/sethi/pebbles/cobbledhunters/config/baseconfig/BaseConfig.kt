@@ -11,7 +11,8 @@ object BaseConfig {
     private val datastoreConfigHandler = ConfigFileHandler(BaseConfig::class.java, baseConfigFile, gson)
 
 
-    var baseConfig = BaseConfig()
+    var config
+    = BaseConfig()
 
     init {
         reload()
@@ -19,7 +20,7 @@ object BaseConfig {
 
     fun reload() {
         datastoreConfigHandler.reload()
-        baseConfig = datastoreConfigHandler.config
+        config = datastoreConfigHandler.config
     }
 
 

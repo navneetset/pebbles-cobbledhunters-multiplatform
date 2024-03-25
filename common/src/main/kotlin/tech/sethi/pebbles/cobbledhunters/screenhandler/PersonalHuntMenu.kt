@@ -1,6 +1,5 @@
 package tech.sethi.pebbles.cobbledhunters.screenhandler
 
-import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.scheduling.afterOnMain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,12 +14,11 @@ import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
-import tech.sethi.pebbles.cobbledhunters.CobbledHunters
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
-import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
+import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.PersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
 import tech.sethi.pebbles.cobbledhunters.hunt.type.PersonalHunts
@@ -32,7 +30,7 @@ class PersonalHuntMenu(
 ) : GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X1, syncId, player.inventory, SimpleInventory(9 * 1), 1) {
 
     val config = PersonalHuntScreenConfig.config
-    val baseConfig = BaseConfig.baseConfig
+    val baseConfig = BaseConfig.config
 
     val huntSlots = config.slots
 
@@ -87,7 +85,7 @@ class PersonalHuntMenu(
 
         huntSlots.forEach { huntSlot ->
             val lore = huntSlot.itemStack.lore.toMutableList()
-            val hunt = PersonalHuntHandler.personalHunts[player.uuidAsString]
+            val hunt = JSONPersonalHuntHandler.personalHunts[player.uuidAsString]
 
             val currentHunt = getHuntByDifficulty(hunt, huntSlot.difficulty)
             val huntLore = mutableListOf<String>()
@@ -113,6 +111,10 @@ class PersonalHuntMenu(
                     lore.replaceAll { it.replace("{refreshing_time}", "<green>Active</green>") }
                 }
 
+                lore.replaceAll { it.replace("{cost}", currentHunt.hunt.cost.toString()) }
+                lore.replaceAll { it.replace("{currency}", EconomyConfig.economyConfig.currencyName) }
+                lore.replaceAll { it.replace("{currency_symbol}", EconomyConfig.economyConfig.currencySymbol) }
+
                 val remainingTime = currentHunt.endTime?.minus(System.currentTimeMillis())
                 if (remainingTime != null && remainingTime > 0) {
                     lore.add(" ")
@@ -133,13 +135,13 @@ class PersonalHuntMenu(
     }
 
     fun getHuntByDifficulty(hunt: PersonalHunts?, difficulty: HuntDifficulties): HuntTracker? {
-        val playerHunts = PersonalHuntHandler.getPersonalHunts(player.uuidAsString, player.name.string)
+        val playerHunts = JSONPersonalHuntHandler.getPersonalHunts(player.uuidAsString, player.name.string)
         return when (difficulty) {
-            HuntDifficulties.EASY -> playerHunts.easyHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.MEDIUM -> playerHunts.mediumHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.HARD -> playerHunts.hardHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.LEGENDARY -> playerHunts.legendaryHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.GODLIKE -> playerHunts.godlikeHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.EASY -> playerHunts.easyHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.MEDIUM -> playerHunts.mediumHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.HARD -> playerHunts.hardHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.LEGENDARY -> playerHunts.legendaryHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.GODLIKE -> playerHunts.godlikeHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
         }
     }
 
@@ -183,7 +185,7 @@ class PersonalHuntMenu(
 
         // check which difficulty was clicked
         val huntSlot = huntSlots.firstOrNull { it.slot == slotIndex } ?: return
-        val hunt = PersonalHuntHandler.personalHunts[player.uuidAsString]
+        val hunt = JSONPersonalHuntHandler.personalHunts[player.uuidAsString]
 
         val currentHunt = getHuntByDifficulty(hunt, huntSlot.difficulty)
         if (currentHunt != null) player.openHandledScreen(personalHuntInfoMenuScreenHandlerFactory(player, currentHunt))

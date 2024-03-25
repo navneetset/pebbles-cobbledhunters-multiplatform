@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.CobbledHunters
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.RewardScreenConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.SelectionScreenConfig
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
@@ -146,7 +147,12 @@ class RewardStorageMenu(
 
             in expSlots -> {
                 if (rewardStorage!!.exp > 0) {
+                    val currentLevel = DatabaseHandler.db!!.playerLevel(player.uuidAsString)
                     DatabaseHandler.db!!.addPlayerExp(player.uuidAsString, rewardStorage.exp)
+                    val newLevel = DatabaseHandler.db!!.playerLevel(player.uuidAsString)
+                    if (newLevel > currentLevel) {
+                        PM.sendText(player, LangConfig.langConfig.levelUp.replace("{level}", newLevel.toString()))
+                    }
                     rewardStorage.exp = 0
                     DatabaseHandler.db!!.removePlayerExp(player.uuidAsString)
                     setupPage()

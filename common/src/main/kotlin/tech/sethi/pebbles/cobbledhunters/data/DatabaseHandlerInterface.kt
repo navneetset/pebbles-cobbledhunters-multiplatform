@@ -28,6 +28,7 @@ interface DatabaseHandlerInterface {
     fun initPlayerExpProgress(playerUUID: String, playerName: String)
     fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress?
     fun addPlayerExp(playerUUID: String, exp: Int)
+    fun playerLevel(playerUUID: String): Int
 
     fun ping()
     fun close()

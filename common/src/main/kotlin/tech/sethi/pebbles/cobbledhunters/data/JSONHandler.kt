@@ -4,6 +4,7 @@ import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.exp.ExpConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntPoolConfigLoader
@@ -52,6 +53,7 @@ class JSONHandler : DatabaseHandlerInterface {
         rewardLoader.reload()
         globalHuntsLoader.reload()
         globalHuntsPoolLoader.reload()
+        personalHuntsLoader.reload()
     }
 
     override fun getRewards(): List<HuntReward> {
@@ -130,6 +132,11 @@ class JSONHandler : DatabaseHandlerInterface {
         val expProgress = expProgressLoader.getExp(playerUUID)
         expProgress.exp += exp
         expProgressLoader.save(expProgress)
+    }
+
+    override fun playerLevel(playerUUID: String): Int {
+        val expProgress = expProgressLoader.getExp(playerUUID)
+        return expProgress.exp / BaseConfig.config.expPerLevel
     }
 
     override fun ping() {

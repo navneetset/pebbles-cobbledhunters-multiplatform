@@ -9,6 +9,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
+import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
@@ -22,7 +23,7 @@ import tech.sethi.pebbles.partyapi.eventlistener.LeavePartyEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-object PersonalHuntHandler : AbstractPersonalHuntHandler() {
+object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     override val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
     override val rolledHunts = ConcurrentHashMap<String, HuntTracker>()
     override val activeBossbars = ConcurrentHashMap<String, ServerBossBar>()
@@ -32,6 +33,17 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
             val playerUUID = player.uuidAsString
             val playerName = player.name.string
             personalHunts[playerUUID] = getPersonalHunts(playerUUID, playerName)
+
+            // if player is in a hunt, redisplay the bossbar
+            val personalHunt = getPersonalHunts(playerUUID, playerName)
+            personalHunt.getHunts().forEach {
+                if (it?.active == true) {
+                    val bossbar = activeBossbars[it.uuid]
+                    if (bossbar != null) {
+                        addPlayerToBossbar(bossbar, player, it.uuid)
+                    }
+                }
+            }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -58,12 +70,23 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
                     }
                 }
 
+                // update bossbar time progress
+                activeBossbars.forEach { (uuid, bossbar) ->
+                    val huntTracker = rolledHunts[uuid] ?: return@forEach
+                    if (huntTracker.active) {
+                        // countdown time by depleting the progress
+                        val timeLeft = huntTracker.endTime!! - System.currentTimeMillis()
+                        val timeProgress = (timeLeft.toDouble() / (huntTracker.endTime!! - huntTracker.startTime!!)).toFloat()
+                        bossbar.percent = timeProgress
+                    }
+                }
+
                 delay(1000)
             }
         }
 
 
-        if (BaseConfig.baseConfig.enablePartyHunts) {
+        if (BaseConfig.config.enablePartyHunts) {
             LeavePartyEvent.EVENT.register(object : LeavePartyEvent {
                 override fun onLeaveParty(playerUuid: String) {
                     // end active hunt if player leaves party
@@ -116,16 +139,23 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
         fun rollHuntForDifficulty(difficulty: HuntDifficulties) {
             val hunt = personalHunts.getHuntByDifficulty(difficulty)
             if (hunt == null || hunt.success != null || (hunt.endTime != null && hunt.endTime!! < System.currentTimeMillis()) || (hunt.expireTime < System.currentTimeMillis() && hunt.active.not())) {
+                // if player ran out of time, notify them
+                if (hunt?.endTime != null && hunt.endTime!! < System.currentTimeMillis()) {
+                    val player = PM.getPlayer(playerName) ?: return
+                    PM.sendText(player, LangConfig.langConfig.huntTimeEnded)
+                    cancelHunt(playerUUID, playerName, difficulty)
+                }
+
                 val randomHunt = allHunts.filter { it.difficulty == difficulty }.random()
                 randomHunt.rewardPools.forEach {
                     it.reward = it.getRolledReward()
                 }
                 val expireMinutes = when (difficulty) {
-                    HuntDifficulties.EASY -> BaseConfig.baseConfig.easyRefreshTime
-                    HuntDifficulties.MEDIUM -> BaseConfig.baseConfig.mediumRefreshTime
-                    HuntDifficulties.HARD -> BaseConfig.baseConfig.hardRefreshTime
-                    HuntDifficulties.LEGENDARY -> BaseConfig.baseConfig.legendaryRefreshTime
-                    HuntDifficulties.GODLIKE -> BaseConfig.baseConfig.godlikeRefreshTime
+                    HuntDifficulties.EASY -> BaseConfig.config.easyRefreshTime
+                    HuntDifficulties.MEDIUM -> BaseConfig.config.mediumRefreshTime
+                    HuntDifficulties.HARD -> BaseConfig.config.hardRefreshTime
+                    HuntDifficulties.LEGENDARY -> BaseConfig.config.legendaryRefreshTime
+                    HuntDifficulties.GODLIKE -> BaseConfig.config.godlikeRefreshTime
                 }
                 val newHunt = HuntTracker(
                     UUID.randomUUID().toString(),
@@ -149,11 +179,23 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
     fun activateHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties): Boolean {
         val personalHunts = getPersonalHunts(playerUUID, playerName)
         val huntTracker = personalHunts.getHuntByDifficulty(difficulty) ?: return false
+
+        if (!hasMinLevel(playerUUID, difficulty)) {
+            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntLevelRequirement)
+            return false
+        }
+
+        if (!hasEnoughBalance(playerUUID, huntTracker)) {
+            PM.sendText(
+                PM.getPlayer(playerName) ?: return false,
+                LangConfig.langConfig.notEnoughBalance.replace("{currency}", EconomyConfig.economyConfig.currencyName)
+            )
+            return false
+        }
+
         if (huntTracker.active) return false
         if (huntTracker.expireTime < System.currentTimeMillis()) {
-            PM.sendText(
-                PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntExpired
-            )
+            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntExpired)
             return false
         }
 
@@ -315,21 +357,21 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
             splitableRolledReward.forEach {
                 it?.amount = it?.amount?.div(partySize) ?: 0
                 it?.displayItem!!.lore.add(
-                    "<gray>(${
+                    "<gray>${
                         LangConfig.langConfig.splitRewardLore.replace(
                             "{party_size}", partySize.toString()
                         )
-                    })"
+                    }"
                 )
             }
             splitableGuaranteedReward.forEach {
                 it?.amount = it?.amount?.div(partySize) ?: 0
                 it?.displayItem!!.lore.add(
-                    "<gray>(${
+                    "<gray>${
                         LangConfig.langConfig.splitRewardLore.replace(
                             "{party_size}", partySize.toString()
                         )
-                    })"
+                    }"
                 )
             }
             val rewards =
@@ -388,7 +430,7 @@ object PersonalHuntHandler : AbstractPersonalHuntHandler() {
     }
 
     fun isInParty(playerUUID: String): Boolean {
-        return BaseConfig.baseConfig.enablePartyHunts && PartyHandler.db.getPlayerParty(playerUUID) != null
+        return BaseConfig.config.enablePartyHunts && PartyHandler.db.getPlayerParty(playerUUID) != null
     }
 
 }

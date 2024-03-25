@@ -141,6 +141,10 @@ class MongoDBHandler : DatabaseHandlerInterface {
         TODO("Not yet implemented")
     }
 
+    override fun playerLevel(playerUUID: String): Int {
+        TODO("Not yet implemented")
+    }
+
     override fun ping() {
         println("Pebble's Cobbled Hunter pinging MongoDB")
         mongoClient.listDatabaseNames().forEach { println(it) }

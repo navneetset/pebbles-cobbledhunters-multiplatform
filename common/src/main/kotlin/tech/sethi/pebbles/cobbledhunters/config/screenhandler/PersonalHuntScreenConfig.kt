@@ -35,6 +35,7 @@ object PersonalHuntScreenConfig {
                     lore = mutableListOf(
                         "<gray>Difficulty: <green>Easy",
                         "<gray>Minimum Level: <green>0",
+                        "<gray>Cost: {cost} <aqua>{currency_symbol}",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
                         "",
@@ -50,6 +51,7 @@ object PersonalHuntScreenConfig {
                     lore = mutableListOf(
                         "<gray>Difficulty: <yellow>Medium",
                         "<gray>Minimum Level: <yellow>20",
+                        "<gray>Cost: {cost} <aqua>{currency_symbol}",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
                         "",
@@ -65,6 +67,7 @@ object PersonalHuntScreenConfig {
                     lore = mutableListOf(
                         "<gray>Difficulty: <red>Hard",
                         "<gray>Minimum Level: <red>50",
+                        "<gray>Cost: {cost} <aqua>{currency_symbol}",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
                         "",
@@ -80,6 +83,7 @@ object PersonalHuntScreenConfig {
                     lore = mutableListOf(
                         "<gray>Difficulty: <dark_red>Legendary",
                         "<gray>Minimum Level: <dark_red>100",
+                        "<gray>Cost: {cost} <aqua>{currency_symbol}",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
                         "",
@@ -95,6 +99,7 @@ object PersonalHuntScreenConfig {
                     lore = mutableListOf(
                         "<gray>Difficulty: <light_purple>Godlike",
                         "<gray>Minimum Level: <light_purple>200",
+                        "<gray>Cost: {cost} <aqua>{currency_symbol}",
                         "Refreshing: {refreshing_time}",
                         "Click to view rewards!",
                         "",

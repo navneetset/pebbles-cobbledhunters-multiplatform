@@ -10,7 +10,8 @@ import net.minecraft.server.MinecraftServer
 import org.apache.logging.log4j.LogManager
 import tech.sethi.pebbles.cobbledhunters.command.HuntCommand
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
-import tech.sethi.pebbles.cobbledhunters.hunt.PersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
 
 object CobbledHunters {
     const val MOD_ID = "pebbles_cobbledhunters"
@@ -30,12 +31,13 @@ object CobbledHunters {
         }
 
         LifecycleEvent.SERVER_STARTED.register {
-            PersonalHuntHandler
+            JSONPersonalHuntHandler
+            EconomyHandler
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             CobblemonEvents.POKEMON_CAPTURED.subscribe { event ->
-                PersonalHuntHandler.onPokemonCaptured(event.player, event.pokemon)
+                JSONPersonalHuntHandler.onPokemonCaptured(event.player, event.pokemon)
             }
         }
 

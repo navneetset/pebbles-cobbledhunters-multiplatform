@@ -50,8 +50,7 @@ object RewardScreenConfig {
         val expSlots: List<Int> = listOf(25),
         val expSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             "<gray>Exp", "minecraft:experience_bottle", 1, null, mutableListOf(
-                "Click to claim exp!",
-                "<blue>Exp: <aqua>{exp}"
+                "Click to claim exp!", "<blue>Exp: <aqua>{exp}"
             )
         ),
     )

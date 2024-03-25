@@ -1,6 +1,6 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.type
 
-import tech.sethi.pebbles.cobbledhunters.hunt.PersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
 
 data class PersonalHunts(
     val playerUUID: String,
@@ -13,11 +13,11 @@ data class PersonalHunts(
 ) {
     fun getHuntByDifficulty(difficulty: HuntDifficulties): HuntTracker? {
         return when (difficulty) {
-            HuntDifficulties.EASY -> easyHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.MEDIUM -> mediumHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.HARD -> hardHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.LEGENDARY -> legendaryHunt?.let { PersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.GODLIKE -> godlikeHunt?.let { PersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.EASY -> easyHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.MEDIUM -> mediumHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.HARD -> hardHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.LEGENDARY -> legendaryHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.GODLIKE -> godlikeHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
         }
     }
 
@@ -30,17 +30,13 @@ data class PersonalHunts(
             HuntDifficulties.GODLIKE -> godlikeHunt = huntTracker?.uuid
         }
 
-        huntTracker?.let { PersonalHuntHandler.rolledHunts[it.uuid] = it }
-    }
-
-    fun addParticipant(difficulty: HuntDifficulties, playerUUID: String) {
-        getHuntByDifficulty(difficulty)?.participants?.add(playerUUID)
+        huntTracker?.let { JSONPersonalHuntHandler.rolledHunts[it.uuid] = it }
     }
 
     fun getHunts(): List<HuntTracker?> {
         return listOf(
             easyHunt, mediumHunt, hardHunt, legendaryHunt, godlikeHunt
-        ).map { it?.let { PersonalHuntHandler.rolledHunts[it] } }
+        ).map { it?.let { JSONPersonalHuntHandler.rolledHunts[it] } }
     }
 
     fun getActiveHunt(): HuntTracker? {

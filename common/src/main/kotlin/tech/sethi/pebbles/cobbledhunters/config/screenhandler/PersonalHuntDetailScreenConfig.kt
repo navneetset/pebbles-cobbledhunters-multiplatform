@@ -25,16 +25,26 @@ object PersonalHuntDetailScreenConfig {
 
     data class PersonalHuntDetailConfig(
         val title: String = "{hunt_name}",
+        val splittableText: String = "<aqua>[Party Split]",
+        val huntStartedText: String = "<green>Hunt already Started!",
         val rewardSlots: List<Int> = (0..35).toList(),
         val startSlots: List<Int> = listOf(53),
         val startSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            displayName = "<green>Start Hunt", material = "minecraft:lime_wool", amount = 1, nbt = null, lore = mutableListOf(
+            displayName = "<green>Start Hunt",
+            material = "minecraft:lime_wool",
+            amount = 1,
+            nbt = null,
+            lore = mutableListOf(
                 "Click to start the hunt!"
             )
         ),
         val cancelSlots: List<Int> = listOf(52),
         val cancelSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
-            displayName = "<red>Cancel Hunt", material = "minecraft:red_wool", amount = 1, nbt = null, lore = mutableListOf(
+            displayName = "<red>Cancel Hunt",
+            material = "minecraft:red_wool",
+            amount = 1,
+            nbt = null,
+            lore = mutableListOf(
                 "Click to cancel the hunt!"
             )
         ),
@@ -49,6 +59,28 @@ object PersonalHuntDetailScreenConfig {
             displayName = "<gray>Hunt Info", material = "minecraft:paper", amount = 1, nbt = null, lore = mutableListOf(
                 "<white><b>Hunt Info", "{hunt_info}"
             )
+        ),
+        val expSlots: List<Int> = listOf(46),
+        val expSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>EXP: <light_purple>{exp}",
+            material = "minecraft:experience_bottle",
+            amount = 1,
+            nbt = null,
+            lore = mutableListOf()
+        ),
+        val timeLimitSlots: List<Int> = listOf(47),
+        val timeLimitSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>Time Limit: <yellow>{time_limit}</yellow> minutes",
+            material = "minecraft:clock",
+            amount = 1,
+            nbt = null
+        ),
+        val costSlots: List<Int> = listOf(48),
+        val costSlotStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>Cost: <yellow>{cost}</yellow> {currency_symbol}",
+            material = "minecraft:emerald",
+            amount = 1,
+            nbt = null
         ),
         val emptySlots: List<Int> = listOf(),
         val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(

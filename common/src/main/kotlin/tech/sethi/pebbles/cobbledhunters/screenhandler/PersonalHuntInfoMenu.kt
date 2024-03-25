@@ -9,10 +9,13 @@ import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
+import tech.sethi.pebbles.cobbledhunters.CobbledHunters
+import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
+import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntDetailScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.PersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
@@ -28,8 +31,10 @@ class PersonalHuntInfoMenu(
     val cancelSlots = config.cancelSlots
     val backSlots = config.backSlots
     val huntInfoSlots = config.huntInfoSlots
+    val expSlots = config.expSlots
+    val timeLimitSlots = config.timeLimitSlots
+    val costSlots = config.costSlots
     val emptySlots = config.emptySlots
-
 
     init {
         setupPage()
@@ -72,9 +77,16 @@ class PersonalHuntInfoMenu(
 
         rewardSlots.forEach { slot ->
             if (allRewards.size > slot) {
-                val rewardStack = allRewards[slot].displayItem.toItemStack()
-                rewardStack.setCustomName(PM.returnStyledText(allRewards[slot].name))
-                inventory.setStack(slot, allRewards[slot].displayItem.toItemStack())
+                val reward = allRewards[slot]
+                CobbledHunters.LOGGER.info("Reward: $reward")
+                val rewardSerializedStack = reward.displayItem.deepCopy()
+                CobbledHunters.LOGGER.info("Reward serialized stack: $rewardSerializedStack")
+                if (BaseConfig.config.enablePartyHunts && reward.splitable == true) {
+                    CobbledHunters.LOGGER.info("Reward is splittable")
+                    rewardSerializedStack.displayName = rewardSerializedStack.displayName + " " + config.splittableText
+                }
+
+                inventory.setStack(slot, rewardSerializedStack.toItemStack())
             }
         }
 
@@ -84,7 +96,7 @@ class PersonalHuntInfoMenu(
             }
         } else {
             startSlots.forEach { slot ->
-                inventory.setStack(slot, config.startSlotStack.toItemStack(newLore = listOf("Hunt already started!")))
+                inventory.setStack(slot, config.startSlotStack.toItemStack(newLore = listOf(config.huntStartedText)))
             }
             cancelSlots.forEach { slot ->
                 inventory.setStack(slot, config.cancelSlotStack.toItemStack())
@@ -99,6 +111,32 @@ class PersonalHuntInfoMenu(
             val huntInfoStack = config.huntInfoSlotStack.toItemStack(newLore = huntInfo)
             hunt.name.let { huntInfoStack.setCustomName(PM.returnStyledText(it)) }
             inventory.setStack(slot, huntInfoStack)
+        }
+
+        expSlots.forEach { slot ->
+            val serializedExpStack = config.expSlotStack.deepCopy()
+            serializedExpStack.lore =
+                serializedExpStack.lore.map { it.replace("{exp}", hunt.experience.toString()) }.toMutableList()
+            serializedExpStack.displayName =
+                serializedExpStack.displayName?.replace("{exp}", hunt.experience.toString())
+            val expStack = serializedExpStack.toItemStack()
+            inventory.setStack(slot, expStack)
+        }
+
+        timeLimitSlots.forEach { slot ->
+            val timeLimitSerializedStack = config.timeLimitSlotStack.deepCopy()
+            timeLimitSerializedStack.displayName =
+                timeLimitSerializedStack.displayName?.replace("{time_limit}", hunt.timeLimitMinutes.toString())
+            inventory.setStack(slot, timeLimitSerializedStack.toItemStack())
+        }
+
+        costSlots.forEach { slot ->
+            val costSerializedStack = config.costSlotStack.deepCopy()
+            costSerializedStack.displayName =
+                costSerializedStack.displayName?.replace("{cost}", hunt.cost.toString())?.replace(
+                    "{currency_symbol}", EconomyConfig.economyConfig.currencySymbol
+                )?.replace("{currency}", EconomyConfig.economyConfig.currencyName)
+            inventory.setStack(slot, costSerializedStack.toItemStack())
         }
 
         emptySlots.forEach { slot ->
@@ -131,20 +169,21 @@ class PersonalHuntInfoMenu(
             in startSlots -> {
                 if (huntTracker.active.not()) {
                     // check if hunt is expired
-                    val activated = PersonalHuntHandler.activateHunt(
+                    val activated = JSONPersonalHuntHandler.activateHunt(
                         player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
                     )
                     if (activated) {
                         PM.sendText(player, LangConfig.langConfig.huntActivated)
-                    }
-                    else PM.sendText(player, LangConfig.langConfig.huntActivationFailed)
+                    } else PM.sendText(player, LangConfig.langConfig.huntActivationFailed)
                     player.closeHandledScreen()
                 }
             }
 
             in cancelSlots -> {
                 if (huntTracker.active) {
-                    PersonalHuntHandler.cancelHunt(player.uuidAsString, player.name.string, huntTracker.hunt.difficulty)
+                    JSONPersonalHuntHandler.cancelHunt(
+                        player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
+                    )
                     player.closeHandledScreen()
                 }
             }

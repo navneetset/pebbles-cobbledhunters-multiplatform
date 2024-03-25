@@ -15,19 +15,17 @@ object HuntCommand {
 
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
 
-        val huntCommand =
-            literal("hunt")
-                .executes { context: CommandContext<ServerCommandSource> ->
-                    val player = context.source.player ?: return@executes 1.also {
-                        context.source.sendFeedback(
-                            { PM.returnStyledText("<red>Only players can use this command</red>") }, false
-                        )
-                    }
-
-                    player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
-
-                    1
+        val huntCommand = literal("hunt").executes { context: CommandContext<ServerCommandSource> ->
+                val player = context.source.player ?: return@executes 1.also {
+                    context.source.sendFeedback(
+                        { PM.returnStyledText("<red>Only players can use this command</red>") }, false
+                    )
                 }
+
+                player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
+
+                1
+            }
 
         val reloadCommand =
             literal("reload").requires { PermUtil.commandRequiresPermission(it, "pebbles.cobbledhunts.reload") }
@@ -37,6 +35,7 @@ object HuntCommand {
 //                    EconomyHandler.reload()
 
                     DatabaseHandler.reload()
+                    DatabaseHandler.db?.reload()
 
                     context.source.sendFeedback(
                         { PM.returnStyledText("<blue>Reloaded Cobbled Hunters config!") }, false
