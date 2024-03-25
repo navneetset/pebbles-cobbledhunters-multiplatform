@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager
 import tech.sethi.pebbles.cobbledhunters.command.HuntCommand
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
 import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.global.JSONGlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntGoals
 
@@ -37,6 +38,7 @@ object CobbledHunters {
 
         LifecycleEvent.SERVER_STARTED.register {
             JSONPersonalHuntHandler
+            JSONGlobalHuntHandler
             EconomyHandler
         }
 

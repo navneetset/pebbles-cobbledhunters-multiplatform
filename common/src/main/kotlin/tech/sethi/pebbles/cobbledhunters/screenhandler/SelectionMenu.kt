@@ -85,7 +85,7 @@ class SelectionMenu(
 
         when (slotIndex) {
             in globalHuntsSlots -> {
-//                player.openHandledScreen(globalHuntMenuScreenHandlerFactory(player))
+                player.openHandledScreen(globalHuntMenuScreenHandlerFactory(player))
                 return
             }
 

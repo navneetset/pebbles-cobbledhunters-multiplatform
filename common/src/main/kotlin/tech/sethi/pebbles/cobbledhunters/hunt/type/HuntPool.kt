@@ -23,17 +23,17 @@ val spiderHuntList = listOf(
         guaranteedRewardId = listOf(),
         rewardPools = listOf(Pool(pebblesPool), Pool(pokeballPool), Pool(apricornPool), Pool(apricornPool)),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
                 experience = 50
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
                 experience = 30
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
@@ -53,17 +53,17 @@ val spiderHuntList = listOf(
             Pool(pokeballPool), Pool(pebblesPool), Pool(rareCandyPool), Pool(potionPool), Pool(apricornPool)
         ),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1), Pool(vitaminPool1)),
                 experience = 100
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1)),
                 experience = 80
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
@@ -83,17 +83,17 @@ val spiderHuntList = listOf(
             Pool(pebblesPool), Pool(pokeballPool), Pool(rareCandyPool), Pool(potionPool), Pool(vitaminPool1)
         ),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1), Pool(vitaminPool1)),
                 experience = 200
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1)),
                 experience = 150
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
@@ -119,17 +119,17 @@ val spiderHuntList = listOf(
             Pool(vitaminPool1)
         ),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1), Pool(vitaminPool1)),
                 experience = 300
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool1)),
                 experience = 200
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
@@ -153,17 +153,17 @@ val spiderHuntList = listOf(
             Pool(vitaminPool2),
         ),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool2), Pool(vitaminPool2)),
                 experience = 250
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool2)),
                 experience = 150
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),
@@ -192,17 +192,17 @@ val spiderHuntList = listOf(
             Pool(vitaminPool3)
         ),
         extraRankingRewards = listOf(
-            RankingReward(
+            RankingRewards(
                 rank = 1,
                 guaranteedRewardId = listOf(pebblesReward3.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool3), Pool(vitaminPool3)),
                 experience = 500
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 2,
                 guaranteedRewardId = listOf(pebblesReward2.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool), Pool(vitaminPool3)),
                 experience = 300
-            ), RankingReward(
+            ), RankingRewards(
                 rank = 3,
                 guaranteedRewardId = listOf(pebblesReward1.id),
                 rewardPools = listOf(Pool(pokeballPool), Pool(apricornPool)),

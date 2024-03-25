@@ -50,7 +50,7 @@ data class GlobalHuntTracker(
         return participants.values.sortedByDescending { it.progress }
     }
 
-    fun getRankingReward(): RankingReward? {
+    fun getRankingReward(): RankingRewards? {
         val ranking = getRanking()
         for (reward in hunt.extraRankingRewards) {
             if (ranking.size >= reward.rank) {
@@ -58,6 +58,14 @@ data class GlobalHuntTracker(
             }
         }
         return null
+    }
+
+    fun getRankingRewardAt(rank: Int): RankingRewards? {
+        return hunt.extraRankingRewards.find { it.rank == rank }
+    }
+
+    fun getRankingRewardCount(): Int {
+        return hunt.extraRankingRewards.size
     }
 }
 

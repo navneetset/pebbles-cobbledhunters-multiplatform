@@ -1,6 +1,10 @@
 package tech.sethi.pebbles.cobbledhunters.screenhandler
 
-import com.cobblemon.mod.common.CobblemonSounds
+import com.cobblemon.mod.common.api.scheduling.afterOnMain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.screen.GenericContainerScreenHandler
@@ -11,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
+import tech.sethi.pebbles.cobbledhunters.hunt.global.JSONGlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 
@@ -22,8 +27,7 @@ class GlobalHuntMenu(
 
     val huntSlots = config.slots
 
-    val allSlots = huntSlots.map { it.slot }
-
+    val backSlots = config.backSlots
 
     init {
         setupPage()
@@ -31,44 +35,43 @@ class GlobalHuntMenu(
         UnvalidatedSound.playToPlayer(
             Identifier("cobblemon", "pc.on"),
             SoundCategory.MASTER,
-            1.0f,
+            0.5f,
             1.0f,
             player.blockPos,
             player.world,
-            8.0,
+            2.0,
             player
         )
 
-//        GlobalHuntHandler.addHuntScreen(player.uuidAsString, this)
-    }
-
-    fun refreshPage() {
-        setupPage()
+        ScreenRefresher.addGlobalHuntMenu(player.uuidAsString, this)
     }
 
     fun setupPage() {
-//        huntSlots.forEach { huntSlot ->
-//            // modify {ongoing_hunt} in lore to show the current hunt and remaining time
-//            val lore = huntSlot.itemStack.lore.toMutableList()
-//            val ongoingHunt = GlobalHuntHandler.activeGlobalHunts[huntSlot.huntPoolId]
-//            // 1h 30m 20s
-//            val timeRemaining = ongoingHunt?.endTime?.time?.minus(System.currentTimeMillis()) ?: 0
-//            val timeRemainingString = PM.formatTime(timeRemaining)
-//            if (ongoingHunt != null) {
-//                lore[lore.indexOf("{ongoing_hunt}")] = "<gray>Current Hunt: <light_purple>${ongoingHunt.hunt.name}"
-//                lore.add("<gray>Time Remaining: <yellow>$timeRemainingString")
-//            } else {
-//                lore[lore.indexOf("{ongoing_hunt}")] = "<gray>Current Hunt: <light_purple>None"
-//            }
-//
-//            inventory.setStack(huntSlot.slot, huntSlot.itemStack.toItemStack(newLore = lore))
-//        }
+        huntSlots.forEach { huntSlot ->
+            // modify {ongoing_hunt} in lore to show the current hunt and remaining time
+            val lore = huntSlot.itemStack.lore.toMutableList()
+            val tracker = JSONGlobalHuntHandler.globalHuntPools[huntSlot.huntPoolId] ?: return
+            val timeRemaining = tracker.expireTime.minus(System.currentTimeMillis())
+            val timeRemainingString = PM.formatTime(timeRemaining)
+            lore.replaceAll { it.replace("{refresh_time}", timeRemainingString) }
+            lore.replaceAll { it.replace("{hunt_name}", tracker.hunt.name) }
+            lore.replaceAll { it.replace("{progress}", "${tracker.getProgress()}/${tracker.hunt.amount}") }
+            lore.replaceAll { it.replace("{participants}", tracker.participants.size.toString()) }
+
+            inventory.setStack(huntSlot.slot, huntSlot.itemStack.toItemStack(newLore = lore))
+        }
+
+        backSlots.forEach { backSlot ->
+            inventory.setStack(backSlot, config.backStack.toItemStack())
+        }
+
+        config.emptySlots.forEach { emptySlot ->
+            inventory.setStack(emptySlot, config.emptySlotItemStack.toItemStack())
+        }
     }
 
 
     override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
-
-        if (!allSlots.contains(slotIndex)) return
 
         UnvalidatedSound.playToPlayer(
             Identifier("cobblemon", "pc.click"),
@@ -81,7 +84,19 @@ class GlobalHuntMenu(
             player as ServerPlayerEntity
         )
 
+        when {
+            huntSlots.any { it.slot == slotIndex } -> {
+                val huntSlot = huntSlots.find { it.slot == slotIndex } ?: return
+                val tracker = JSONGlobalHuntHandler.globalHuntPools[huntSlot.huntPoolId] ?: return
+                ScreenRefresher.removeGlobalHuntMenu(player.uuidAsString)
+                player.openHandledScreen(globalHuntInfoMenuScreenHandlerFactory(player, tracker))
+            }
 
+            backSlots.contains(slotIndex) -> {
+                ScreenRefresher.removeGlobalHuntMenu(player.uuidAsString)
+                player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
+            }
+        }
 
         return
     }
@@ -98,10 +113,9 @@ class GlobalHuntMenu(
             player as ServerPlayerEntity
         )
 
-//        GlobalHuntHandler.removeHuntScreen(player.uuidAsString)
+        ScreenRefresher.removeGlobalHuntMenu(player.uuidAsString)
         super.onClosed(player)
     }
-
 }
 
 fun globalHuntMenuScreenHandlerFactory(player: PlayerEntity) =

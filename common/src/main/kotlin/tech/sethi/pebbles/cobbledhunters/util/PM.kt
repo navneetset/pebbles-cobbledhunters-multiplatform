@@ -165,8 +165,15 @@ object PM {
         val seconds = time / 1000
         val minutes = seconds / 60
         val hours = minutes / 60
+        val days = hours / 24
 
-        return "${hours}h ${minutes % 60}m ${seconds % 60}s"
+        // return all formatted time if exists
+        return when {
+            days > 0 -> "${days}d ${hours % 24}h ${minutes % 60}m"
+            hours > 0 -> "${hours}h ${minutes % 60}m ${seconds % 60}s"
+            minutes > 0 -> "${minutes}m ${seconds % 60}s"
+            else -> "${seconds}s"
+        }
     }
 
     fun getPlayer(uuidOrName: String): ServerPlayerEntity? {

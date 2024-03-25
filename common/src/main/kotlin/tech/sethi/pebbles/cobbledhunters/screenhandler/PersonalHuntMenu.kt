@@ -1,10 +1,5 @@
 package tech.sethi.pebbles.cobbledhunters.screenhandler
 
-import com.cobblemon.mod.common.api.scheduling.afterOnMain
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.screen.GenericContainerScreenHandler
@@ -40,9 +35,6 @@ class PersonalHuntMenu(
 
     val allSlots = huntSlots.map { it.slot } + backSlots
 
-    var isOpen = true
-
-
     init {
         setupPage()
 
@@ -59,20 +51,10 @@ class PersonalHuntMenu(
 
 //        GlobalHuntHandler.addHuntScreen(player.uuidAsString, this)
 
-        //refresh page every 1 seconds
-        CoroutineScope(Dispatchers.IO).launch {
-            while (isOpen) {
-                afterOnMain(0) {
-                    refreshPage()
-                }
-                delay(1000)
-            }
-        }
+        ScreenRefresher.addPersonalHuntMenu(player.uuidAsString, this)
+
     }
 
-    fun refreshPage() {
-        setupPage()
-    }
 
     fun setupPage() {
         val difficultyTimeLimit = mapOf(
@@ -181,7 +163,10 @@ class PersonalHuntMenu(
             player as ServerPlayerEntity
         )
 
-        if (backSlots.contains(slotIndex)) player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
+        if (backSlots.contains(slotIndex)) {
+            player.openHandledScreen(selectionMenuScreenHandlerFactory(player))
+            ScreenRefresher.removePersonalHuntMenu(player.uuidAsString)
+        }
 
         // check which difficulty was clicked
         val huntSlot = huntSlots.firstOrNull { it.slot == slotIndex } ?: return
@@ -190,7 +175,7 @@ class PersonalHuntMenu(
         val currentHunt = getHuntByDifficulty(hunt, huntSlot.difficulty)
         if (currentHunt != null) player.openHandledScreen(personalHuntInfoMenuScreenHandlerFactory(player, currentHunt))
 
-        isOpen = false
+        ScreenRefresher.removePersonalHuntMenu(player.uuidAsString)
         return
     }
 
@@ -206,8 +191,7 @@ class PersonalHuntMenu(
             player as ServerPlayerEntity
         )
 
-        isOpen = false
-//        GlobalHuntHandler.removeHuntScreen(player.uuidAsString)
+        ScreenRefresher.removePersonalHuntMenu(player.uuidAsString)
         super.onClosed(player)
     }
 
@@ -216,4 +200,4 @@ class PersonalHuntMenu(
 fun personalHuntMenuScreenHandlerFactory(player: PlayerEntity) =
     SimpleNamedScreenHandlerFactory({ syncId, playerInventory, _ ->
         PersonalHuntMenu(syncId, player as ServerPlayerEntity)
-    }, PM.returnStyledText(GlobalHuntScreenConfig.config.title))
+    }, PM.returnStyledText(PersonalHuntScreenConfig.config.title))

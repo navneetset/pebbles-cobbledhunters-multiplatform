@@ -9,9 +9,9 @@ object GlobalHuntScreenConfig {
     val gson = ConfigHandler.gson
     val selectionScreenConfigFile = File("config/pebbles-cobbledhunters/screens/globalhunt-screen.json")
 
-    var config = SelectionScreenConfig()
+    var config = GlobalHuntScreenData()
     val selectionScreenFileHandler =
-        ConfigFileHandler(SelectionScreenConfig::class.java, selectionScreenConfigFile, gson)
+        ConfigFileHandler(GlobalHuntScreenData::class.java, selectionScreenConfigFile, gson)
 
     init {
         reload()
@@ -22,35 +22,41 @@ object GlobalHuntScreenConfig {
         config = selectionScreenFileHandler.config
     }
 
-    data class SelectionScreenConfig(
-        val title: String = "<blue>Global Hunts", val slots: List<SlotConfig> = listOf(
+    data class GlobalHuntScreenData(
+        val title: String = "<blue>Global Hunts",
+        val slots: List<SlotConfig> = listOf(
             SlotConfig(
-                slot = 0, huntPoolId = "arachnid_pool", itemStack = ConfigHandler.SerializedItemStack(
-                    displayName = "<light_purple>Arachnids",
+                slot = 10, huntPoolId = "arachnid_pool", itemStack = ConfigHandler.SerializedItemStack(
+                    displayName = "<light_purple>Arachnids <yellow>Hunt Pool",
                     material = "minecraft:spider_spawn_egg",
                     amount = 1,
                     nbt = null,
                     lore = mutableListOf(
-                        "<gray>Difficulty: <light_purple>Easy",
                         "<gray>Features: <light_purple>Arachnids Pokémon",
-                        "<gray>Time Limit: <light_purple>2 Hours",
-                        "<gray>Start Time: <light_purple>Every 2 Hours or on completion",
-                        "<aqua>Click to view rewards!",
+                        "<gray>Refreshing in: <aqua>{refresh_time}",
+                        "<aqua>Click to view hunt details and rewards!",
                         "",
-                        "{ongoing_hunt}"
+                        "<gray>Ongoing: {hunt_name}",
+                        "<gray>Progress: {progress}",
+                        "<gray>Participants: {participants}"
                     )
                 )
             )
-        ), val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+        ),
+        val backSlots: List<Int> = listOf(45),
+        val backStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
+            displayName = "<gray>Back", material = "minecraft:gray_wool", amount = 1, nbt = null, lore = mutableListOf()
+        ),
+        val emptySlotItemStack: ConfigHandler.SerializedItemStack = ConfigHandler.SerializedItemStack(
             displayName = "<gray>",
             material = "minecraft:gray_stained_glass_pane",
             amount = 1,
             nbt = null,
-            lore = mutableListOf(
-                "<gray>There is no global hunt in this slot.", "<gray>Check back later!"
-            ),
+            lore = mutableListOf(),
         ),
-        val emptySlots: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val emptySlots: List<Int> = listOf(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 48, 49, 50, 51, 52, 53
+        )
     )
 
     data class SlotConfig(

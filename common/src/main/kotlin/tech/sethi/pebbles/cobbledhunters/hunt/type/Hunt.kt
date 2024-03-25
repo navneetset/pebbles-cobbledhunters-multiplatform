@@ -26,14 +26,14 @@ data class GlobalHunt(
     val description: List<String> = listOf(),
     val guaranteedRewardId: List<String> = listOf(),
     val rewardPools: List<Pool> = listOf(),
-    val extraRankingRewards: List<RankingReward> = listOf(),
+    val extraRankingRewards: List<RankingRewards> = listOf(),
     val timeLimitMinutes: Int = 120,
     val maxPlayers: Int = 10,
     val cost: Int = 50,
     val experience: Int = 50
 )
 
-data class RankingReward(
+data class RankingRewards(
     val rank: Int, val guaranteedRewardId: List<String>, val rewardPools: List<Pool>, val experience: Int
 )
 

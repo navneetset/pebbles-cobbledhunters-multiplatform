@@ -39,6 +39,14 @@ object JSONGlobalHuntHandler : AbstractGlobalHuntHandler() {
         }
     }
 
+    fun purgeAndReload() {
+        activeBossbars.forEach { (_, bossbar) ->
+            bossbar.clearPlayers()
+        }
+        activeBossbars.clear()
+        globalHuntPools.clear()
+    }
+
     fun onLoad() {
         GlobalHuntPoolConfigLoader.globalHuntsPool.forEach {
             rollNewHunt(it.id)
@@ -58,6 +66,8 @@ object JSONGlobalHuntHandler : AbstractGlobalHuntHandler() {
             }
         }
 
+        activeBossbars[poolId]?.clearPlayers()
+        activeBossbars.remove(poolId)
         globalHuntPools[poolId] = null
         rollNewHunt(poolId)
     }
