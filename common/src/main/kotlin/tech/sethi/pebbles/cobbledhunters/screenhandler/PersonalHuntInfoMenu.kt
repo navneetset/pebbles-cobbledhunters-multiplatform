@@ -14,7 +14,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntDetailScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound

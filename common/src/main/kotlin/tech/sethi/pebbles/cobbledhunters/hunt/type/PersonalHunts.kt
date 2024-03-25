@@ -1,6 +1,6 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.type
 
-import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
 
 data class PersonalHunts(
     val playerUUID: String,

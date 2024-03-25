@@ -24,7 +24,7 @@ class MongoDBHandler : DatabaseHandlerInterface {
     val mongoClient = MongoClients.create(mongoClientSettings)
     val database = mongoClient.getDatabase(config.database)
 
-    val globalHuntCollection = database.getCollection(config.globalHuntCollection, Hunt::class.java)
+    val globalHuntCollection = database.getCollection(config.globalHuntCollection, GlobalHunt::class.java)
     val globalHuntPoolCollection = database.getCollection(config.globalHuntPoolCollection, HuntPool::class.java)
 
     val globalHuntSessionCollection =
@@ -68,7 +68,7 @@ class MongoDBHandler : DatabaseHandlerInterface {
         return rewardCollection.find(Filters.eq("id", id)).first()
     }
 
-    override fun getGlobalHunts(): List<Hunt> {
+    override fun getGlobalHunts(): List<GlobalHunt> {
         return globalHuntCollection.find().toList()
     }
 

@@ -18,7 +18,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.JSONPersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
 import tech.sethi.pebbles.cobbledhunters.hunt.type.PersonalHunts

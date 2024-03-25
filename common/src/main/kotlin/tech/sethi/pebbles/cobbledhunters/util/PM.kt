@@ -75,6 +75,12 @@ object PM {
         player.sendMessage(component, false)
     }
 
+    fun broadcast(string: String) {
+        server()?.playerManager?.playerList?.forEach { player ->
+            sendText(player, string)
+        }
+    }
+
     fun parseCommand(
         command: String, context: String, server: MinecraftServer, player: PlayerEntity?
     ): ParseResults<ServerCommandSource>? {

@@ -13,8 +13,11 @@ data class HuntFeature(
     val ability: String? = null,
     val ball: HuntBalls? = HuntBalls.ANY,
     val form: String? = null,
+    val goal: HuntGoals = HuntGoals.CATCH
 ) {
-    fun checkRequirement(pokemon: Pokemon): Boolean {
+    fun checkRequirement(pokemon: Pokemon, goal: HuntGoals): Boolean {
+        if (this.goal != goal) return false
+
         val species = pokemon.species.resourceIdentifier.path
 //        CobbledHunters.LOGGER.info("Checking requirement for $species and required species: ${this.species}")
         if (this.species != null && !this.species.contains(species)) {
@@ -98,11 +101,19 @@ enum class PokemonNatures {
 }
 
 val grassTypeFeature = HuntFeature(
-    type = PokemonTypes.GRASS, levelRange = LevelRange(1, 100), shiny = false, gender = HuntGender.MALE, ball = HuntBalls.GREAT_BALL
+    type = PokemonTypes.GRASS,
+    levelRange = LevelRange(1, 100),
+    shiny = false,
+    gender = HuntGender.MALE,
+    ball = HuntBalls.GREAT_BALL
 )
 
 enum class HuntBalls {
     ANY, POKE_BALL, CITRINE_BALL, VERDANT_BALL, AZURE_BALL, ROSEATE_BALL, SLATE_BALL, PREMIER_BALL, GREAT_BALL, ULTRA_BALL, SAFARI_BALL, FAST_BALL, LEVEL_BALL, LURE_BALL, HEAVY_BALL, LOVE_BALL, FRIEND_BALL, MOON_BALL, SPORT_BALL, PARK_BALL, NET_BALL, DIVE_BALL, NEST_BALL, REPEAT_BALL, TIMER_BALL, LUXURY_BALL, DUSK_BALL, HEAL_BALL, QUICK_BALL, DREAM_BALL, CHERISH_BALL, BEAST_BALL, MASTER_BALL
+}
+
+enum class HuntGoals {
+    CATCH, DEFEAT, KILL
 }
 
 val pokeballMap = mapOf(

@@ -37,5 +37,8 @@ object LangConfig {
         val notEnoughBalance: String = "<gold>[CobbledHunters] <red>You do not have enough <yellow>{currency}</yellow> to start this hunt",
         val levelUp: String = "<gold>[CobbledHunters] <green>You have leveled up your hunting mastery to level <gold>{level}",
         val huntTimeEnded: String = "<gold>[CobbledHunters] <red>Oh no! You have run out of time to complete the hunt. The hunt has been cancelled",
+        val huntProgressIncrease: String = "<gold>[CobbledHunters] <green>Hunt progress: <gold>{progress}",
+        val globalHuntExpired: String = "<gold>[CobbledHunters] <red>Global hunt has failed due to time limit. Better luck next time!",
+        val globalPoolRefreshAnnouncement: String = "<gold>[CobbledHunters] <green>Global hunt pool {pool} has been refreshed. <aqua>/hunt</aqua> to start a new hunt",
     )
 }

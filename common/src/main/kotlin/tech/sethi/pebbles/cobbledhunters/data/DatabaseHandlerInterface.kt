@@ -11,7 +11,7 @@ interface DatabaseHandlerInterface {
     fun reload()
     fun getRewards(): List<HuntReward>
     fun getReward(id: String): HuntReward?
-    fun getGlobalHunts(): List<Hunt>
+    fun getGlobalHunts(): List<GlobalHunt>
     fun getGlobalHuntPools(): List<HuntPool>
     fun getGlobalHuntSessions(): Map<String, GlobalHuntSession>
     fun getPersonalHunts(): List<Hunt>

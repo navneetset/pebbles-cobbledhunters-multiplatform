@@ -1,4 +1,4 @@
-package tech.sethi.pebbles.cobbledhunters.hunt
+package tech.sethi.pebbles.cobbledhunters.hunt.personal
 
 import com.cobblemon.mod.common.pokemon.Pokemon
 import dev.architectury.event.events.common.PlayerEvent
@@ -7,15 +7,19 @@ import net.minecraft.entity.boss.BossBar.Color
 import net.minecraft.entity.boss.BossBar.Style
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.sound.SoundCategory
+import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
+import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntGoals
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
 import tech.sethi.pebbles.cobbledhunters.hunt.type.PersonalHunts
 import tech.sethi.pebbles.cobbledhunters.util.PM
+import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 import tech.sethi.pebbles.partyapi.dataclass.Party
 import tech.sethi.pebbles.partyapi.datahandler.PartyHandler
 import tech.sethi.pebbles.partyapi.eventlistener.JoinPartyEvent
@@ -76,7 +80,8 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     if (huntTracker.active) {
                         // countdown time by depleting the progress
                         val timeLeft = huntTracker.endTime!! - System.currentTimeMillis()
-                        val timeProgress = (timeLeft.toDouble() / (huntTracker.endTime!! - huntTracker.startTime!!)).toFloat()
+                        val timeProgress =
+                            (timeLeft.toDouble() / (huntTracker.endTime!! - huntTracker.startTime!!)).toFloat()
                         bossbar.percent = timeProgress
                     }
                 }
@@ -219,15 +224,13 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
 
         if (isInParty(playerUUID)) {
             val party = PartyHandler.db.getPlayerParty(playerUUID)
-            if (party != null) {
-                party.members.forEach {
-                    val member = PM.getPlayer(it.name)
-                    if (member != null) {
-                        addPlayerToBossbar(bossbar, member, huntTracker.uuid)
-                        // replace the party member hunt with the same hunt
-                        val memberPersonalHunt = getPersonalHunts(it.uuid, it.name)
-                        memberPersonalHunt.setHuntByDifficulty(difficulty, huntTracker)
-                    }
+            party?.members?.forEach {
+                val member = PM.getPlayer(it.name)
+                if (member != null) {
+                    addPlayerToBossbar(bossbar, member, huntTracker.uuid)
+                    // replace the party member hunt with the same hunt
+                    val memberPersonalHunt = getPersonalHunts(it.uuid, it.name)
+                    memberPersonalHunt.setHuntByDifficulty(difficulty, huntTracker)
                 }
             }
             huntTracker.participants.addAll(party?.members?.map { it.uuid } ?: listOf())
@@ -392,11 +395,12 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
     }
 
-    fun onPokemonCaptured(player: ServerPlayerEntity, pokemon: Pokemon) {
+    fun onPokemonAction(player: ServerPlayerEntity, pokemon: Pokemon, goal: HuntGoals) {
         val personalHunts = getPersonalHunts(player.uuidAsString, player.name.string)
         personalHunts.getHunts().forEach { huntTracker ->
             if (huntTracker?.active == true) {
-                if (huntTracker.hunt.huntFeature.checkRequirement(pokemon)) {
+                val feature = huntTracker.hunt.huntFeature
+                if (feature.checkRequirement(pokemon, goal)) {
                     huntTracker.progress++
                     val bossbar = activeBossbars[huntTracker.uuid]
 
@@ -405,6 +409,11 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                         party?.members?.forEach {
                             val member = PM.getPlayer(it.name)
                             if (member != null) {
+                                PM.sendText(
+                                    member, LangConfig.langConfig.huntProgressIncrease.replace(
+                                        "{progress}", huntTracker.progress.toString() + "/" + huntTracker.hunt.amount
+                                    )
+                                )
                                 val memberPersonalHunt = getPersonalHunts(it.uuid, it.name)
                                 memberPersonalHunt.getHunts().forEach { memberHuntTracker ->
                                     if (memberHuntTracker?.active == true && memberHuntTracker.uuid == huntTracker.uuid) {
@@ -413,6 +422,17 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                                         memberBossbar?.name = PM.returnStyledText(createBossBarText(memberHuntTracker))
                                         if (memberHuntTracker.progress >= memberHuntTracker.hunt.amount) {
                                             completeHunt(it.uuid, it.name, memberHuntTracker.hunt.difficulty)
+
+                                            UnvalidatedSound.playToPlayer(
+                                                Identifier("minecraft", "ui.toast.challenge_complete"),
+                                                SoundCategory.MASTER,
+                                                0.75f,
+                                                1.5f,
+                                                member.blockPos,
+                                                member.world,
+                                                2.0,
+                                                member
+                                            )
                                         }
                                     }
                                 }
@@ -420,8 +440,23 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                         }
                     } else {
                         bossbar?.name = PM.returnStyledText(createBossBarText(huntTracker))
+                        PM.sendText(
+                            player, LangConfig.langConfig.huntProgressIncrease.replace(
+                                "{progress}", huntTracker.progress.toString() + "/" + huntTracker.hunt.amount
+                            )
+                        )
                         if (huntTracker.progress >= huntTracker.hunt.amount) {
                             completeHunt(player.uuidAsString, player.name.string, huntTracker.hunt.difficulty)
+                            UnvalidatedSound.playToPlayer(
+                                Identifier("minecraft", "ui.toast.challenge_complete"),
+                                SoundCategory.MASTER,
+                                0.75f,
+                                1.5f,
+                                player.blockPos,
+                                player.world,
+                                2.0,
+                                player
+                            )
                         }
                     }
                 }

@@ -18,6 +18,25 @@ data class Hunt(
     val experience: Int = 0
 )
 
+data class GlobalHunt(
+    val id: String,
+    val name: String,
+    val amount: Int = 1,
+    val huntFeature: HuntFeature = grassTypeFeature,
+    val description: List<String> = listOf(),
+    val guaranteedRewardId: List<String> = listOf(),
+    val rewardPools: List<Pool> = listOf(),
+    val extraRankingRewards: List<RankingReward> = listOf(),
+    val timeLimitMinutes: Int = 120,
+    val maxPlayers: Int = 10,
+    val cost: Int = 50,
+    val experience: Int = 50
+)
+
+data class RankingReward(
+    val rank: Int, val guaranteedRewardId: List<String>, val rewardPools: List<Pool>, val experience: Int
+)
+
 data class Pool(
     val rewards: List<PoolReward>,
 ) {

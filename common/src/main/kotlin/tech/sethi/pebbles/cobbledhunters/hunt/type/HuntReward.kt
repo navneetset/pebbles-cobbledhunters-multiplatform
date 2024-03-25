@@ -270,8 +270,8 @@ val hyperPotionReward = HuntReward(
 )
 
 val maxPotionReward = HuntReward(
-    "max_potion", "Max Potion", 4, true, ConfigHandler.SerializedItemStack(
-        "<green>Max Potion", "cobblemon:max_potion", 4, null
+    "max_potion", "Max Potion", 2, true, ConfigHandler.SerializedItemStack(
+        "<green>Max Potion", "cobblemon:max_potion", 2, null
     ), listOf(
         "give {player_name} cobblemon:max_potion {amount}"
     )
@@ -488,10 +488,35 @@ val rewardList = listOf(
     ppUpReward3
 )
 
+val pokeballPool: List<PoolReward> = listOf(
+    PoolReward(pokeballReward1.id, 5),
+    PoolReward(pokeballReward2.id, 3),
+    PoolReward(pokeballReward3.id, 1)
+)
+
+val pebblesPool: List<PoolReward> = listOf(
+    PoolReward(pebblesReward1.id, 5),
+    PoolReward(pebblesReward2.id, 3),
+    PoolReward(pebblesReward3.id, 1)
+)
+
+val rareCandyPool: List<PoolReward> = listOf(
+    PoolReward(rareCanReward1.id, 5),
+    PoolReward(rareCanReward2.id, 3),
+    PoolReward(rareCanReward3.id, 1)
+)
+
 val apricornPool: List<PoolReward> = listOf(
     PoolReward(redApricornReward.id, 5),
     PoolReward(blueApricornReward.id, 3),
     PoolReward(yellowApricornReward.id, 1)
+)
+
+val potionPool: List<PoolReward> = listOf(
+    PoolReward(potionReward.id, 6),
+    PoolReward(superPotionReward.id, 4),
+    PoolReward(hyperPotionReward.id, 2),
+    PoolReward(maxPotionReward.id, 1)
 )
 
 val vitaminPool1: List<PoolReward> = listOf(

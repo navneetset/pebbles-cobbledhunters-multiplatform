@@ -64,7 +64,7 @@ class JSONHandler : DatabaseHandlerInterface {
         return rewardLoader.rewards.find { it.id == id }
     }
 
-    override fun getGlobalHunts(): List<Hunt> {
+    override fun getGlobalHunts(): List<GlobalHunt> {
         return globalHuntsLoader.globalHunts
     }
 

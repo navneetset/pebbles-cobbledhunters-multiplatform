@@ -1,4 +1,4 @@
-package tech.sethi.pebbles.cobbledhunters.hunt
+package tech.sethi.pebbles.cobbledhunters.hunt.personal
 
 import net.minecraft.entity.boss.ServerBossBar
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig

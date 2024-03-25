@@ -1,6 +1,7 @@
 package tech.sethi.pebbles.cobbledhunters.config.hunt.global
 
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.type.GlobalHunt
 import tech.sethi.pebbles.cobbledhunters.hunt.type.Hunt
 import tech.sethi.pebbles.cobbledhunters.util.ConfigDirectoryHandler
 import java.io.File
@@ -11,10 +12,10 @@ object GlobalHuntConfigLoader {
     val globalHuntDirectory = File(ConfigHandler.configDirectory, "global_hunts")
 
     val globalHuntFilesHandler = ConfigDirectoryHandler(
-        Hunt::class.java, globalHuntDirectory, gson
+        GlobalHunt::class.java, globalHuntDirectory, gson
     )
 
-    var globalHunts = listOf<Hunt>()
+    var globalHunts = listOf<GlobalHunt>()
 
     init {
         reload()
@@ -25,11 +26,11 @@ object GlobalHuntConfigLoader {
         globalHunts = globalHuntFilesHandler.configs
     }
 
-    fun createHunt(hunt: Hunt) {
-        globalHunts += hunt
+    fun createHunt(globalHunt: GlobalHunt) {
+        globalHunts += globalHunt
         globalHuntDirectory.mkdirs()
-        val configString = gson.toJson(hunt)
-        val file = File(globalHuntDirectory, "${hunt.id}.json")
+        val configString = gson.toJson(globalHunt)
+        val file = File(globalHuntDirectory, "${globalHunt.id}.json")
         file.writeText(configString)
     }
 }
