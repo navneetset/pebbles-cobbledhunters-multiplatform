@@ -161,11 +161,8 @@ class GlobalHuntInfoMenu(
             val allRankRewardsNames = allRankRewards.map { it.name }
 
             val rankRewardLore = allRankRewardsNames.toMutableList()
-            val slotStack = rankSlot.itemStack.toItemStack()
-            slotStack.orCreateNbt.putInt("HideFlags", 63)
-            PM.setLore(slotStack, rankRewardLore)
 
-            inventory.setStack(rankSlot.slot, slotStack)
+            inventory.setStack(rankSlot.slot, rankSlot.itemStack.toItemStack(newLore = rankRewardLore))
         }
 
         emptySlots.forEach { slot ->
