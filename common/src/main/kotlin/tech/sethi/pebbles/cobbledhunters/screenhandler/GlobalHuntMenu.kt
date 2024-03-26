@@ -1,10 +1,5 @@
 package tech.sethi.pebbles.cobbledhunters.screenhandler
 
-import com.cobblemon.mod.common.api.scheduling.afterOnMain
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.screen.GenericContainerScreenHandler
@@ -57,6 +52,8 @@ class GlobalHuntMenu(
             lore.replaceAll { it.replace("{hunt_name}", tracker.hunt.name) }
             lore.replaceAll { it.replace("{progress}", "${tracker.getProgress()}/${tracker.hunt.amount}") }
             lore.replaceAll { it.replace("{participants}", tracker.participants.size.toString()) }
+            val status = if (tracker.isCompleted()) config.huntStatus.completed else config.huntStatus.ongoing
+            lore.replaceAll { it.replace("{status}", status) }
 
             inventory.setStack(huntSlot.slot, huntSlot.itemStack.toItemStack(newLore = lore))
         }
@@ -89,7 +86,7 @@ class GlobalHuntMenu(
                 val huntSlot = huntSlots.find { it.slot == slotIndex } ?: return
                 val tracker = JSONGlobalHuntHandler.globalHuntPools[huntSlot.huntPoolId] ?: return
                 ScreenRefresher.removeGlobalHuntMenu(player.uuidAsString)
-                player.openHandledScreen(globalHuntInfoMenuScreenHandlerFactory(player, tracker))
+                player.openHandledScreen(globalHuntInfoMenuScreenHandlerFactory(player, tracker, huntSlot.huntPoolId))
             }
 
             backSlots.contains(slotIndex) -> {

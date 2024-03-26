@@ -1,25 +1,40 @@
 package tech.sethi.pebbles.cobbledhunters.screenhandler
 
 import com.cobblemon.mod.common.api.scheduling.afterOnMain
-import kotlinx.coroutines.*
+import com.cobblemon.mod.common.util.server
+import dev.architectury.event.events.common.LifecycleEvent
+import java.lang.Thread.sleep
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 object ScreenRefresher {
     val activeGlobalHuntMenus = ConcurrentHashMap<String, GlobalHuntMenu>()
     val activePersonalHuntMenus = ConcurrentHashMap<String, PersonalHuntMenu>()
 
+    val activeGlobalHuntInfoMenu = ConcurrentHashMap<String, GlobalHuntInfoMenu>()
+
+    val refreshThread = Executors.newSingleThreadExecutor()
+
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            while (this.isActive) {
+        refreshThread.submit {
+            while (server() != null && server()!!.isRunning) {
                 activeGlobalHuntMenus.forEach { (_, globalHuntMenu) ->
                     afterOnMain(0) { globalHuntMenu.setupPage() }
-
                 }
                 activePersonalHuntMenus.forEach { (_, personalHuntMenu) ->
                     afterOnMain(0) { personalHuntMenu.setupPage() }
                 }
-                delay(1000)
+
+                activeGlobalHuntInfoMenu.forEach { (_, globalHuntInfoMenu) ->
+                    afterOnMain(0) { globalHuntInfoMenu.refreshTimeStack() }
+                }
+
+                sleep(1000)
             }
+        }
+
+        LifecycleEvent.SERVER_STOPPING.register {
+            refreshThread.shutdownNow()
         }
     }
 
@@ -31,11 +46,19 @@ object ScreenRefresher {
         activePersonalHuntMenus[playerUUID] = personalHuntMenu
     }
 
+    fun addGlobalHuntInfoMenu(playerUUID: String, globalHuntInfoMenu: GlobalHuntInfoMenu) {
+        activeGlobalHuntInfoMenu[playerUUID] = globalHuntInfoMenu
+    }
+
     fun removeGlobalHuntMenu(playerUUID: String) {
         activeGlobalHuntMenus.remove(playerUUID)
     }
 
     fun removePersonalHuntMenu(playerUUID: String) {
         activePersonalHuntMenus.remove(playerUUID)
+    }
+
+    fun removeGlobalHuntInfoMenu(playerUUID: String) {
+        activeGlobalHuntInfoMenu.remove(playerUUID)
     }
 }

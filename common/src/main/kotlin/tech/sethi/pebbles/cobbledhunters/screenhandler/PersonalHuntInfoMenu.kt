@@ -169,8 +169,8 @@ class PersonalHuntInfoMenu(
                         player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
                     )
                     if (activated) {
-                        PM.sendText(player, LangConfig.langConfig.huntActivated)
-                    } else PM.sendText(player, LangConfig.langConfig.huntActivationFailed)
+                        PM.sendText(player, LangConfig.config.huntActivated)
+                    } else PM.sendText(player, LangConfig.config.huntActivationFailed)
                     player.closeHandledScreen()
                 }
             }

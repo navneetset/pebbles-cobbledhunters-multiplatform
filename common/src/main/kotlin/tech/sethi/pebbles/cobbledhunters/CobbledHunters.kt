@@ -45,6 +45,7 @@ object CobbledHunters {
         CobblemonEvents.POKEMON_CAPTURED.subscribe { event ->
             CoroutineScope(Dispatchers.IO).launch {
                 JSONPersonalHuntHandler.onPokemonAction(event.player, event.pokemon, HuntGoals.CATCH)
+                JSONGlobalHuntHandler.onPokemonAction(event.player, event.pokemon, HuntGoals.CATCH)
             }
         }
 
@@ -53,6 +54,7 @@ object CobbledHunters {
                 val killer = event.pokemon.entity!!.killer as ServerPlayerEntity
                 CoroutineScope(Dispatchers.IO).launch {
                     JSONPersonalHuntHandler.onPokemonAction(killer, event.pokemon, HuntGoals.DEFEAT)
+                    JSONGlobalHuntHandler.onPokemonAction(killer, event.pokemon, HuntGoals.DEFEAT)
                 }
             }
         }
@@ -63,6 +65,7 @@ object CobbledHunters {
                 if (attacker is ServerPlayerEntity) {
                     CoroutineScope(Dispatchers.IO).launch {
                         JSONPersonalHuntHandler.onPokemonAction(attacker, entity.pokemon, HuntGoals.KILL)
+                        JSONGlobalHuntHandler.onPokemonAction(attacker, entity.pokemon, HuntGoals.KILL)
                     }
                 }
             }

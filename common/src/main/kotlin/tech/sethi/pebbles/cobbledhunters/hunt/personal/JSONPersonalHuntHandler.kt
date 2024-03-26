@@ -1,6 +1,9 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.personal
 
+import com.cobblemon.mod.common.api.scheduling.after
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.cobblemon.mod.common.util.server
+import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.*
 import net.minecraft.entity.boss.BossBar.Color
@@ -24,13 +27,17 @@ import tech.sethi.pebbles.partyapi.dataclass.Party
 import tech.sethi.pebbles.partyapi.datahandler.PartyHandler
 import tech.sethi.pebbles.partyapi.eventlistener.JoinPartyEvent
 import tech.sethi.pebbles.partyapi.eventlistener.LeavePartyEvent
+import java.lang.Thread.sleep
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     override val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
     override val rolledHunts = ConcurrentHashMap<String, HuntTracker>()
     override val activeBossbars = ConcurrentHashMap<String, ServerBossBar>()
+
+    val personalHuntWorker = Executors.newSingleThreadExecutor()
 
     init {
         PlayerEvent.PLAYER_JOIN.register { player ->
@@ -50,8 +57,8 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            while (this.isActive) {
+        personalHuntWorker.submit {
+            while (server() != null && server()!!.isRunning) {
                 personalHunts.forEach { (_, personalHunt) ->
                     personalHunt.getHunts().forEach { huntTracker ->
                         if (huntTracker != null) {
@@ -86,8 +93,12 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     }
                 }
 
-                delay(1000)
+                sleep(1000)
             }
+        }
+
+        LifecycleEvent.SERVER_STOPPING.register {
+            personalHuntWorker.shutdownNow()
         }
 
 
@@ -100,9 +111,13 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     val personalHunt = getPersonalHunts(playerUUID, player.name.string)
                     personalHunt.getHunts().forEach {
                         if (it?.active == true) {
-                            cancelHunt(playerUUID, playerUuid, it.hunt.difficulty)
+                            it.participants.remove(playerUUID)
+                            activeBossbars[it.uuid]?.removePlayer(player)
+                            if (it.participants.isEmpty()) {
+                                cancelHunt(playerUUID, player.name.string, it.hunt.difficulty)
+                            }
                             player.sendMessage(
-                                PM.returnStyledText(LangConfig.langConfig.partyLeaveCancelHunt), false
+                                PM.returnStyledText(LangConfig.config.partyLeaveCancelHunt), false
                             )
                         }
                     }
@@ -131,10 +146,8 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     }
 
 
-    fun getPersonalHunts(playerUUID: String, playerName: String): PersonalHunts {
-        return personalHunts.getOrPut(playerUUID) {
-            PersonalHunts(playerUUID, playerName, null, null, null, null, null)
-        }
+    fun getPersonalHunts(playerUUID: String, playerName: String): PersonalHunts = personalHunts.getOrPut(playerUUID) {
+        PersonalHunts(playerUUID, playerName, null, null, null, null, null)
     }
 
     fun rollPersonalHunt(playerUUID: String, playerName: String) {
@@ -147,7 +160,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                 // if player ran out of time, notify them
                 if (hunt?.endTime != null && hunt.endTime!! < System.currentTimeMillis()) {
                     val player = PM.getPlayer(playerName) ?: return
-                    PM.sendText(player, LangConfig.langConfig.huntTimeEnded)
+                    PM.sendText(player, LangConfig.config.huntTimeEnded)
                     cancelHunt(playerUUID, playerName, difficulty)
                 }
 
@@ -186,21 +199,21 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         val huntTracker = personalHunts.getHuntByDifficulty(difficulty) ?: return false
 
         if (!hasMinLevel(playerUUID, difficulty)) {
-            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntLevelRequirement)
+            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.config.huntLevelRequirement)
             return false
         }
 
         if (!hasEnoughBalance(playerUUID, huntTracker)) {
             PM.sendText(
                 PM.getPlayer(playerName) ?: return false,
-                LangConfig.langConfig.notEnoughBalance.replace("{currency}", EconomyConfig.config.currencyName)
+                LangConfig.config.notEnoughBalance.replace("{currency}", EconomyConfig.config.currencyName)
             )
             return false
         }
 
         if (huntTracker.active) return false
         if (huntTracker.expireTime < System.currentTimeMillis()) {
-            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntExpired)
+            PM.sendText(PM.getPlayer(playerName) ?: return false, LangConfig.config.huntExpired)
             return false
         }
 
@@ -208,7 +221,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         personalHunts.getHunts().forEach {
             if (it?.active == true) {
                 PM.sendText(
-                    PM.getPlayer(playerName) ?: return false, LangConfig.langConfig.huntAlreadyActive
+                    PM.getPlayer(playerName) ?: return false, LangConfig.config.huntAlreadyActive
                 )
                 return false
             }
@@ -250,13 +263,11 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
     }
 
-    private fun createBossBarText(huntTracker: HuntTracker): String {
-        return "${huntTracker.hunt.name} <yellow>${huntTracker.progress}/${huntTracker.hunt.amount}</yellow>"
-    }
+    private fun createBossBarText(huntTracker: HuntTracker): String =
+        "${huntTracker.hunt.name} <yellow>${huntTracker.progress}/${huntTracker.hunt.amount}</yellow>"
 
-    private fun createServerBossBar(text: String): ServerBossBar {
-        return ServerBossBar(PM.returnStyledText(text), Color.PURPLE, Style.PROGRESS)
-    }
+    private fun createServerBossBar(text: String): ServerBossBar =
+        ServerBossBar(PM.returnStyledText(text), Color.PURPLE, Style.PROGRESS)
 
     private fun addPlayerToBossbar(bossbar: ServerBossBar, player: ServerPlayerEntity, huntUUID: String) {
         bossbar.addPlayer(player)
@@ -272,13 +283,25 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
 
         val bossbar = activeBossbars[huntTracker.uuid]
-        bossbar?.clearPlayers()
-        activeBossbars.remove(huntTracker.uuid)
+        after(ticks = 20) {
+            bossbar?.clearPlayers()
+            activeBossbars.remove(huntTracker.uuid)
+        }
 
         val player = PM.getPlayer(playerName) ?: return
-        player.sendMessage(
-            PM.returnStyledText(LangConfig.langConfig.huntCancelled), false
-        )
+        if (isInParty(playerUUID)) {
+            val party = PartyHandler.db.getPlayerParty(playerUUID)
+            party?.members?.forEach {
+                val member = PM.getPlayer(it.name)
+                member?.sendMessage(
+                    PM.returnStyledText(LangConfig.config.huntCancelled), false
+                )
+            }
+        } else {
+            player.sendMessage(
+                PM.returnStyledText(LangConfig.config.huntCancelled), false
+            )
+        }
     }
 
     fun joinOngoingHunt(player: ServerPlayerEntity, party: Party) {
@@ -312,7 +335,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
 
         player.sendMessage(
-            PM.returnStyledText(LangConfig.langConfig.partyJoinActiveHunt), false
+            PM.returnStyledText(LangConfig.config.partyJoinActiveHunt), false
         )
     }
 
@@ -329,7 +352,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
 
         huntTracker.participants.forEach {
             val player = PM.getPlayer(it) ?: return@forEach
-            PM.sendText(player, LangConfig.langConfig.huntCompleted)
+            PM.sendText(player, LangConfig.config.huntCompleted)
         }
 
         val bossbar = activeBossbars[huntTracker.uuid]
@@ -361,7 +384,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                 it?.amount = it?.amount?.div(partySize) ?: 0
                 it?.displayItem!!.lore.add(
                     "<gray>${
-                        LangConfig.langConfig.splitRewardLore.replace(
+                        LangConfig.config.splitRewardLore.replace(
                             "{party_size}", partySize.toString()
                         )
                     }"
@@ -371,7 +394,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                 it?.amount = it?.amount?.div(partySize) ?: 0
                 it?.displayItem!!.lore.add(
                     "<gray>${
-                        LangConfig.langConfig.splitRewardLore.replace(
+                        LangConfig.config.splitRewardLore.replace(
                             "{party_size}", partySize.toString()
                         )
                     }"
@@ -396,6 +419,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     }
 
     fun onPokemonAction(player: ServerPlayerEntity, pokemon: Pokemon, goal: HuntGoals) {
+        if (goal != HuntGoals.CATCH && pokemon.isWild().not()) return
         val personalHunts = getPersonalHunts(player.uuidAsString, player.name.string)
         personalHunts.getHunts().forEach { huntTracker ->
             if (huntTracker?.active == true) {
@@ -410,14 +434,13 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                             val member = PM.getPlayer(it.name)
                             if (member != null) {
                                 PM.sendText(
-                                    member, LangConfig.langConfig.huntProgressIncrease.replace(
+                                    member, LangConfig.config.huntProgressIncrease.replace(
                                         "{progress}", huntTracker.progress.toString() + "/" + huntTracker.hunt.amount
                                     )
                                 )
                                 val memberPersonalHunt = getPersonalHunts(it.uuid, it.name)
                                 memberPersonalHunt.getHunts().forEach { memberHuntTracker ->
                                     if (memberHuntTracker?.active == true && memberHuntTracker.uuid == huntTracker.uuid) {
-                                        memberHuntTracker.progress++
                                         val memberBossbar = activeBossbars[memberHuntTracker.uuid]
                                         memberBossbar?.name = PM.returnStyledText(createBossBarText(memberHuntTracker))
                                         if (memberHuntTracker.progress >= memberHuntTracker.hunt.amount) {
@@ -441,7 +464,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     } else {
                         bossbar?.name = PM.returnStyledText(createBossBarText(huntTracker))
                         PM.sendText(
-                            player, LangConfig.langConfig.huntProgressIncrease.replace(
+                            player, LangConfig.config.huntProgressIncrease.replace(
                                 "{progress}", huntTracker.progress.toString() + "/" + huntTracker.hunt.amount
                             )
                         )
@@ -464,8 +487,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
     }
 
-    fun isInParty(playerUUID: String): Boolean {
-        return BaseConfig.config.enablePartyHunts && PartyHandler.db.getPlayerParty(playerUUID) != null
-    }
+    fun isInParty(playerUUID: String): Boolean =
+        BaseConfig.config.enablePartyHunts && PartyHandler.db.getPlayerParty(playerUUID) != null
 
 }

@@ -35,8 +35,8 @@ object SelectionScreenConfig {
                 "<yellow>Compete in global hunts to earn rewards!",
                 "<yellow>Click on a hunt to view its details.",
                 "",
-                "<gray>Be the first to complete the hunt to earn rewards!",
-                "<red>[Coming Soon]"
+                "<gray>Participate in global hunts to earn rewards!",
+                "<gray>Gain extra rewards for placing in the tops!",
             )
         ),
         val personalHuntsSlots: List<Int> = listOf(2),

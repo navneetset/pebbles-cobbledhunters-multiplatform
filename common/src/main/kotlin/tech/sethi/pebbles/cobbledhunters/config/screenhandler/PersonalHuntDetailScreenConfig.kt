@@ -45,7 +45,7 @@ object PersonalHuntDetailScreenConfig {
             amount = 1,
             nbt = null,
             lore = mutableListOf(
-                "Click to cancel the hunt!"
+                "Click to cancel the hunt!", "<red>Cost will not be refunded"
             )
         ),
         val backSlots: List<Int> = listOf(45),

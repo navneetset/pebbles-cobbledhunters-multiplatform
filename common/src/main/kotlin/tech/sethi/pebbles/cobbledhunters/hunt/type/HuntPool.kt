@@ -41,7 +41,7 @@ val spiderHuntList = listOf(
             )
         ),
         experience = 50,
-        amount = 30,
+        amount = 20,
         cost = 50,
         timeLimitMinutes = 60
     ), GlobalHunt(

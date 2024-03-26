@@ -10,7 +10,7 @@ object LangConfig {
 
     private val langConfigHandler = ConfigFileHandler(Lang::class.java, langConfigFile, gson)
 
-    var langConfig = Lang()
+    var config = Lang()
 
     init {
         reload()
@@ -18,7 +18,7 @@ object LangConfig {
 
     fun reload() {
         langConfigHandler.reload()
-        langConfig = langConfigHandler.config
+        config = langConfigHandler.config
     }
 
     data class Lang(
@@ -39,6 +39,21 @@ object LangConfig {
         val huntTimeEnded: String = "<gold>[CobbledHunters] <red>Oh no! You have run out of time to complete the hunt. The hunt has been cancelled",
         val huntProgressIncrease: String = "<gold>[CobbledHunters] <green>Hunt progress: <gold>{progress}",
         val globalHuntExpired: String = "<gold>[CobbledHunters] <red>Global hunt has failed due to time limit. Better luck next time!",
-        val globalPoolRefreshAnnouncement: String = "<gold>[CobbledHunters] <green>Global hunt pool {pool} has been refreshed. <aqua>/hunt</aqua> to start a new hunt",
+        val globalHuntRefreshed: String = "<gold>[CobbledHunters] <green>Global hunt pool has been refreshed",
+        val globalPoolRefreshAnnouncement: String = "<gold>[CobbledHunters] <green>Global hunt pool {pool} <green>has been refreshed. <aqua>/hunt</aqua> to start a new hunt",
+        val huntNotFound: String = "<gold>[CobbledHunters] <red>Hunt not found",
+        val alreadyParticipating: String = "<gold>[CobbledHunters] <red>You are already participating in this hunt",
+        val huntAlreadyCompleted: String = "<gold>[CobbledHunters] <red>Hunt has already been completed",
+        val successfulJoin: String = "<gold>[CobbledHunters] <green>You have successfully joined the hunt",
+        val globalHuntCompletedBroadcast: String = "<gold>[CobbledHunters] <green>Global hunt [{hunt}] has been completed. Reward has been sent to your hunt reward storage. <aqua>/hunt</aqua> to redeem",
+        val globalHuntRankingReward: String = "<gold>[CobbledHunters] <green>You have received additional rewards for ranking high in the global hunt!",
+        val globalHuntCompletionLeaderboard: String = """
+            <gold>[CobbledHunters] <white>[{hunt}]</white> <green>ranking:</green>
+            1. <yellow>{player1}</yellow> - <aqua>{progress1}</aqua>
+            2. <yellow>{player2}</yellow> - <aqua>{progress2}</aqua>
+            3. <yellow>{player3}</yellow> - <aqua>{progress3}</aqua>
+            4. <yellow>{player4}</yellow> - <aqua>{progress4}</aqua>
+            5. <yellow>{player5}</yellow> - <aqua>{progress5}</aqua>
+        """.trimIndent()
     )
 }

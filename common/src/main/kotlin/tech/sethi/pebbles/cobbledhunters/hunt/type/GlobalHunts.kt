@@ -18,37 +18,29 @@ data class GlobalHuntTracker(
         participants.remove(participant.uuid)
     }
 
-    fun getParticipant(uuid: String): Participant? {
-        return participants[uuid]
-    }
+    fun getParticipant(uuid: String): Participant? = participants[uuid]
 
-    fun isParticipant(uuid: String): Boolean {
-        return participants.containsKey(uuid)
-    }
+    fun isParticipant(uuid: String): Boolean = participants.containsKey(uuid)
 
-    fun getParticipants(): List<Participant> {
-        return participants.values.toList()
-    }
+    fun getParticipants(): List<Participant> = participants.values.toList()
 
-    fun getRequiredProgress(): Int {
-        return hunt.amount
-    }
+    fun getRequiredProgress(): Int = hunt.amount
 
-    fun getProgress(): Int {
-        return participants.values.sumOf { it.progress }
+    fun getProgress(): Int = participants.values.sumOf { it.progress }
+
+    fun addProgress(uuid: String, amount: Int) {
+        participants[uuid]?.progress = (participants[uuid]?.progress ?: 0) + amount
+        participants[uuid]?.updateTime = System.currentTimeMillis()
     }
 
     fun isCompleted(): Boolean {
         return getProgress() >= getRequiredProgress()
     }
 
-    fun expired(): Boolean {
-        return System.currentTimeMillis() > expireTime
-    }
+    fun expired(): Boolean = System.currentTimeMillis() > expireTime
 
-    fun getRanking(): List<Participant> {
-        return participants.values.sortedByDescending { it.progress }
-    }
+    fun getRanking(): List<Participant> =
+        participants.values.sortedWith(compareByDescending<Participant> { it.progress }.thenBy { it.updateTime })
 
     fun getRankingReward(): RankingRewards? {
         val ranking = getRanking()
@@ -60,15 +52,11 @@ data class GlobalHuntTracker(
         return null
     }
 
-    fun getRankingRewardAt(rank: Int): RankingRewards? {
-        return hunt.extraRankingRewards.find { it.rank == rank }
-    }
+    fun getRankingRewardAt(rank: Int): RankingRewards? = hunt.extraRankingRewards.find { it.rank == rank }
 
-    fun getRankingRewardCount(): Int {
-        return hunt.extraRankingRewards.size
-    }
+    fun getRankingRewardCount(): Int = hunt.extraRankingRewards.size
 }
 
 data class Participant(
-    val uuid: String, val playerName: String, var progress: Int = 0
+    val uuid: String, val name: String, var progress: Int = 0, var updateTime: Long = 0
 )

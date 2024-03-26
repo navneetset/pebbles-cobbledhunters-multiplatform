@@ -13,7 +13,6 @@ data class Hunt(
     val guaranteedRewardId: List<String> = listOf(),
     val rewardPools: List<Pool> = listOf(),
     val timeLimitMinutes: Int = 120,
-    val maxPlayers: Int = 1,
     val cost: Int = 0,
     val experience: Int = 0
 )
@@ -28,7 +27,6 @@ data class GlobalHunt(
     val rewardPools: List<Pool> = listOf(),
     val extraRankingRewards: List<RankingRewards> = listOf(),
     val timeLimitMinutes: Int = 120,
-    val maxPlayers: Int = 10,
     val cost: Int = 50,
     val experience: Int = 50
 )

@@ -24,6 +24,7 @@ object GlobalHuntScreenConfig {
 
     data class GlobalHuntScreenData(
         val title: String = "<blue>Global Hunts",
+        val huntStatus: HuntStatus = HuntStatus(),
         val slots: List<SlotConfig> = listOf(
             SlotConfig(
                 slot = 10, huntPoolId = "arachnid_pool", itemStack = ConfigHandler.SerializedItemStack(
@@ -38,7 +39,8 @@ object GlobalHuntScreenConfig {
                         "",
                         "<gray>Ongoing: {hunt_name}",
                         "<gray>Progress: {progress}",
-                        "<gray>Participants: {participants}"
+                        "<gray>Participants: {participants}",
+                        "<gray>Status: {status}"
                     )
                 )
             )
@@ -63,5 +65,10 @@ object GlobalHuntScreenConfig {
         val slot: Int,
         val huntPoolId: String,
         val itemStack: ConfigHandler.SerializedItemStack,
+    )
+
+    data class HuntStatus(
+        val ongoing: String = "<green>Ongoing",
+        val completed: String = "<red>Completed",
     )
 }
