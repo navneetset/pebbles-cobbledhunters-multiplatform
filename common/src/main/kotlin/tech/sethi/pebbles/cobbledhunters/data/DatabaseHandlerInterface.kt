@@ -15,7 +15,7 @@ interface DatabaseHandlerInterface {
     fun getGlobalHuntPools(): List<HuntPool>
     fun getGlobalHuntSessions(): Map<String, GlobalHuntSession>
     fun getPersonalHunts(): List<Hunt>
-    fun getPersonalHuntSessions(): Map<String, PersonalHuntSession>
+    fun getPersonalHuntSessions(): Map<String, PersonalHunts>
 
     fun addGlobalHuntSession(huntSession: GlobalHuntSession): Boolean
     fun updateGlobalHuntSession(huntSession: GlobalHuntSession)
@@ -34,28 +34,28 @@ interface DatabaseHandlerInterface {
     fun close()
 }
 
-fun Pokemon.toHuntDisplayStack(hunt: Hunt): ItemStack {
-    val pokemonStack = PokemonItem.from(this)
-    val species = this.species.translatedName.string
-
-    val huntballType = pokeballMap[hunt.huntFeature.ball]
-    var huntballName: String? = "Any Ball"
-
-    if (huntballType != null) {
-        huntballName = PM.getLocaleText(PM.getItem(huntballType).translationKey)
-    }
-
-    val levelRangeString =
-        hunt.huntFeature.levelRange.min.toString() + " - " + hunt.huntFeature.levelRange.max.toString()
-
-    val placeholderMap = mapOf(
-        "{huntball}" to huntballName,
-        "{shiny}" to if (hunt.huntFeature.shiny) "<gold>★</gold>" else "",
-        "{level_range}" to levelRangeString,
-        "{ability}" to hunt.huntFeature.ability?.let { PM.getLocaleText(it) },
-        "{gender}" to hunt.huntFeature.gender.name,
-        "{form}" to hunt.huntFeature.form,
-    )
-
-    return pokemonStack
-}
+//fun Pokemon.toHuntDisplayStack(hunt: Hunt): ItemStack {
+//    val pokemonStack = PokemonItem.from(this)
+//    val species = this.species.translatedName.string
+//
+//    val huntballType = pokeballMap[hunt.huntFeature.ball]
+//    var huntballName: String? = "Any Ball"
+//
+//    if (huntballType != null) {
+//        huntballName = PM.getLocaleText(PM.getItem(huntballType).translationKey)
+//    }
+//
+//    val levelRangeString =
+//        hunt.huntFeature.levelRange.min.toString() + " - " + hunt.huntFeature.levelRange.max.toString()
+//
+//    val placeholderMap = mapOf(
+//        "{huntball}" to huntballName,
+//        "{shiny}" to if (hunt.huntFeature.shiny) "<gold>★</gold>" else "",
+//        "{level_range}" to levelRangeString,
+//        "{ability}" to hunt.huntFeature.ability?.let { PM.getLocaleText(it) },
+//        "{gender}" to hunt.huntFeature.gender.name,
+//        "{form}" to hunt.huntFeature.form,
+//    )
+//
+//    return pokemonStack
+//}

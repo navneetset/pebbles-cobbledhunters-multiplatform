@@ -36,5 +36,7 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
 
+    implementation("redis.clients:jedis:5.1.0")
+
     compileOnly("net.luckperms:api:5.4")
 }

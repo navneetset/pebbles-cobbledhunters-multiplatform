@@ -59,14 +59,15 @@ object DatastoreConfig {
         val database: String = "pebbles_cobbledhunters",
         val globalHuntCollection: String = "GlobalHunts",
         val globalHuntPoolCollection: String = "GlobalHuntPools",
+        val globalHuntSessionCollection: String = "GlobalHuntSessions",
         val personalHuntCollection: String = "PersonalHunts",
         val personalHuntPoolCollection: String = "PersonalHuntPools",
         val playerHuntCollection: String = "PlayerHunts",
         val rewardCollection: String = "Rewards",
         val rewardPoolCollection: String = "RewardPools",
-        val globalHuntSessionCollection: String = "GlobalHuntSessions",
         val personalHuntSessionCollection: String = "PersonalHuntSessions",
-        val playerRewardStorageCollection: String = "PlayerRewardStorage"
+        val playerRewardStorageCollection: String = "PlayerRewardStorage",
+        val playerExpProgressCollection: String = "PlayerExpProgress"
     )
 
     data class MySQLConfig(

@@ -6,8 +6,6 @@ import com.cobblemon.mod.common.util.server
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.*
-import net.minecraft.entity.boss.BossBar.Color
-import net.minecraft.entity.boss.BossBar.Style
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
@@ -15,8 +13,9 @@ import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
-import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
+import tech.sethi.pebbles.cobbledhunters.data.MongoDBHandler
+import tech.sethi.pebbles.cobbledhunters.data.RedisHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntGoals
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
@@ -30,13 +29,13 @@ import tech.sethi.pebbles.partyapi.eventlistener.LeavePartyEvent
 import java.lang.Thread.sleep
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 
-object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
+object MongoPersonalHuntHandler : AbstractPersonalHuntHandler() {
     override val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
     override val rolledHunts = ConcurrentHashMap<String, HuntTracker>()
     override val activeBossbars = ConcurrentHashMap<String, ServerBossBar>()
 
+    val db = DatabaseHandler.db!! as MongoDBHandler
 
     init {
         PlayerEvent.PLAYER_JOIN.register { player ->
@@ -58,27 +57,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
 
         personalHuntWorker.submit {
             while (server() != null && server()!!.isRunning) {
-                personalHunts.forEach { (_, personalHunt) ->
-                    personalHunt.getHunts().forEach { huntTracker ->
-                        if (huntTracker != null) {
-                            if (huntTracker.active && (huntTracker.endTime
-                                    ?: Long.MAX_VALUE) < System.currentTimeMillis()
-                            ) {
-                                huntTracker.active = false
-                                huntTracker.success = huntTracker.success ?: false
-                            }
-                        }
-                    }
-                }
 
-                // if player has any empty hunts, roll them
-                personalHunts.forEach { (playerUUID, personalHunt) ->
-                    if (personalHunt.getHunts()
-                            .any { it == null || it.success != null || (it.endTime != null && it.endTime!! < System.currentTimeMillis()) || (it.expireTime < System.currentTimeMillis() && it.active.not()) }
-                    ) {
-                        rollPersonalHunt(playerUUID, personalHunt.playerName)
-                    }
-                }
 
                 // update bossbar time progress
                 activeBossbars.forEach { (uuid, bossbar) ->
@@ -144,9 +123,51 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
     }
 
+    override fun getPersonalHunts(playerUUID: String, playerName: String): PersonalHunts {
+        val playerHunt = db.getPlayerPersonalHuntSessions(playerUUID)
+        return if (playerHunt != null) {
+            PersonalHunts(
+                playerUUID,
+                playerName,
+                playerHunt.easyHunt,
+                playerHunt.mediumHunt,
+                playerHunt.hardHunt,
+                playerHunt.legendaryHunt,
+                playerHunt.godlikeHunt
+            )
+        } else {
+            val newPh = PersonalHunts(playerUUID, playerName, null, null, null, null, null)
+            val playerParty = PartyHandler.db.getPlayerParty(playerUUID)
+            if (playerParty != null && playerParty.owner.uuid != playerUUID) {
+                val owner = playerParty.owner
+                val ownerPersonalHunt = db.getPlayerPersonalHuntSessions(owner.uuid)
+                if (ownerPersonalHunt != null) {
+                    ownerPersonalHunt.getHuntByDifficulty(HuntDifficulties.EASY)?.active.let {
+                        if (it == true) newPh.easyHunt = ownerPersonalHunt.easyHunt
+                    }
+                    ownerPersonalHunt.getHuntByDifficulty(HuntDifficulties.MEDIUM)?.active.let {
+                        if (it == true) newPh.mediumHunt = ownerPersonalHunt.mediumHunt
+                    }
+                    ownerPersonalHunt.getHuntByDifficulty(HuntDifficulties.HARD)?.active.let {
+                        if (it == true) newPh.hardHunt = ownerPersonalHunt.hardHunt
+                    }
+                    ownerPersonalHunt.getHuntByDifficulty(HuntDifficulties.LEGENDARY)?.active.let {
+                        if (it == true) newPh.legendaryHunt = ownerPersonalHunt.legendaryHunt
+                    }
+                    ownerPersonalHunt.getHuntByDifficulty(HuntDifficulties.GODLIKE)?.active.let {
+                        if (it == true) newPh.godlikeHunt = ownerPersonalHunt.godlikeHunt
+                    }
+                }
+            }
+
+            db.addPlayerPersonalHuntSession(playerUUID, newPh)
+            newPh
+        }
+    }
+
     override fun rollPersonalHunt(playerUUID: String, playerName: String) {
         val personalHunts = getPersonalHunts(playerUUID, playerName)
-        val allHunts = DatabaseHandler.db!!.getPersonalHunts()
+        val allHunts = db.getPersonalHunts()
 
         fun rollHuntForDifficulty(difficulty: HuntDifficulties) {
             val hunt = personalHunts.getHuntByDifficulty(difficulty)
@@ -156,12 +177,19 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     val player = PM.getPlayer(playerName) ?: return
                     PM.sendText(player, LangConfig.config.huntTimeEnded)
                     cancelHunt(playerUUID, playerName, difficulty)
+                    RedisHandler.publish(
+                        RedisHandler.RedisMessage.phExpired(
+                            RedisHandler.HuntCancellation(playerUUID, playerName, difficulty)
+                        )
+                    )
                 }
 
                 val randomHunt = allHunts.filter { it.difficulty == difficulty }.random()
+
                 randomHunt.rewardPools.forEach {
                     it.reward = it.getRolledReward()
                 }
+
                 val expireMinutes = when (difficulty) {
                     HuntDifficulties.EASY -> BaseConfig.config.easyRefreshTime
                     HuntDifficulties.MEDIUM -> BaseConfig.config.mediumRefreshTime
@@ -169,6 +197,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     HuntDifficulties.LEGENDARY -> BaseConfig.config.legendaryRefreshTime
                     HuntDifficulties.GODLIKE -> BaseConfig.config.godlikeRefreshTime
                 }
+
                 val newHunt = HuntTracker(
                     UUID.randomUUID().toString(),
                     randomHunt,
@@ -179,6 +208,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     active = false,
                     success = null
                 )
+
                 personalHunts.setHuntByDifficulty(
                     difficulty, newHunt
                 )
@@ -186,6 +216,8 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
 
         HuntDifficulties.values().forEach { rollHuntForDifficulty(it) }
+
+        db.updatePlayerPersonalHuntSession(playerUUID, personalHunts)
     }
 
     override fun activateHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties): Boolean {
@@ -266,7 +298,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
         }
 
         val bossbar = activeBossbars[huntTracker.uuid]
-        after(ticks = 20) {
+        after(ticks = 10) {
             bossbar?.clearPlayers()
             activeBossbars.remove(huntTracker.uuid)
         }
@@ -345,15 +377,16 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     }
 
     override fun rewardHunt(playerUUID: String, playerName: String, difficulty: HuntDifficulties) {
+        val dbHandler = DatabaseHandler.db!! as MongoDBHandler
         val personalHunts = getPersonalHunts(playerUUID, playerName)
         val huntTracker = personalHunts.getHuntByDifficulty(difficulty) ?: return
         if (huntTracker.rewarded) return
         huntTracker.rewarded = true
         val rewardPools = huntTracker.hunt.rewardPools
         val rolledRewardIds = rewardPools.map { it.reward }
-        val rolledRewards = rolledRewardIds.map { RewardConfigLoader.getRewardById(it.rewardId) }
+        val rolledRewards = rolledRewardIds.map { dbHandler.getRewardById(it.rewardId) }
         val baseRewardIds = huntTracker.hunt.guaranteedRewardId
-        val baseRewards = baseRewardIds.map { RewardConfigLoader.getRewardById(it) }
+        val baseRewards = baseRewardIds.map { dbHandler.getRewardById(it) }
 
         if (isInParty(playerUUID)) {
             val party = PartyHandler.db.getPlayerParty(playerUUID)

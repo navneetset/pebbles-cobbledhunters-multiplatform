@@ -33,9 +33,7 @@ data class GlobalHuntTracker(
         participants[uuid]?.updateTime = System.currentTimeMillis()
     }
 
-    fun isCompleted(): Boolean {
-        return getProgress() >= getRequiredProgress()
-    }
+    fun isCompleted(): Boolean = getProgress() >= getRequiredProgress()
 
     fun expired(): Boolean = System.currentTimeMillis() > expireTime
 

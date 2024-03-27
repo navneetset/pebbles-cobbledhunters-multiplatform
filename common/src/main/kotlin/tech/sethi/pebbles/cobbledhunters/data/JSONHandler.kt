@@ -24,7 +24,7 @@ class JSONHandler : DatabaseHandlerInterface {
     var globalHuntsSessions = mutableMapOf<String, GlobalHuntSession>()
 
     var personalHuntsLoader = PersonalHuntConfigLoader
-    var personalHuntsSessions = mutableMapOf<String, PersonalHuntSession>()
+    var personalHuntsSessions = mutableMapOf<String, PersonalHunts>()
 
     val rewardStorageLoader = RewardStorageConfigLoader
     val expProgressLoader = ExpConfigLoader
@@ -89,7 +89,7 @@ class JSONHandler : DatabaseHandlerInterface {
         return personalHuntsLoader.personalHunts
     }
 
-    override fun getPersonalHuntSessions(): Map<String, PersonalHuntSession> {
+    override fun getPersonalHuntSessions(): Map<String, PersonalHunts> {
         return personalHuntsSessions
     }
 

@@ -24,61 +24,59 @@ class MongoDBHandler : DatabaseHandlerInterface {
     val mongoClient = MongoClients.create(mongoClientSettings)
     val database = mongoClient.getDatabase(config.database)
 
+    val rewardCollection = database.getCollection(config.rewardCollection, HuntReward::class.java)
+
     val globalHuntCollection = database.getCollection(config.globalHuntCollection, GlobalHunt::class.java)
     val globalHuntPoolCollection = database.getCollection(config.globalHuntPoolCollection, HuntPool::class.java)
-
     val globalHuntSessionCollection =
         database.getCollection(config.globalHuntSessionCollection, GlobalHuntSession::class.java)
 
-    val rewardCollection = database.getCollection(config.rewardCollection, HuntReward::class.java)
+    val personalHuntCollection = database.getCollection(config.personalHuntCollection, Hunt::class.java)
+    val personalHuntSessionCollection =
+        database.getCollection(config.personalHuntSessionCollection, PersonalHunts::class.java)
 
     val playerRewardStorageCollection =
         database.getCollection(config.playerRewardStorageCollection, RewardStorage::class.java)
+    val playerExpProgressCollection =
+        database.getCollection(config.playerExpProgressCollection, ExpConfigLoader.ExpProgress::class.java)
+
+    var personalHuntsCache: List<Hunt> = personalHuntCollection.find().toList()
+    var globalHuntPoolsCache: List<HuntPool> = globalHuntPoolCollection.find().toList()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            if (globalHuntCollection.countDocuments() == 0L) {
-                spiderHuntList.forEach { globalHuntCollection.insertOne(it) }
-            }
-            if (globalHuntPoolCollection.countDocuments() == 0L) {
-                globalHuntPoolCollection.insertOne(arachnidPool)
-            }
-
-            if (rewardCollection.countDocuments() == 0L) {
-                rewardList.forEach { rewardCollection.insertOne(it) }
+            if (globalHuntCollection.countDocuments() == 0L) spiderHuntList.forEach { globalHuntCollection.insertOne(it) }
+            if (globalHuntPoolCollection.countDocuments() == 0L) globalHuntPoolCollection.insertOne(arachnidPool)
+            if (rewardCollection.countDocuments() == 0L) rewardList.forEach { rewardCollection.insertOne(it) }
+            if (personalHuntCollection.countDocuments() == 0L) personalHuntList.forEach {
+                personalHuntCollection.insertOne(
+                    it
+                )
             }
         }
 
         PlayerEvent.PLAYER_JOIN.register { player ->
             CoroutineScope(Dispatchers.IO).launch {
                 initPlayerRewardStorage(player.uuid.toString(), player.name.string)
+                initPlayerExpProgress(player.uuid.toString(), player.name.string)
             }
         }
     }
 
     override fun reload() {
-        // Do nothing
+        personalHuntsCache = personalHuntCollection.find().toList()
     }
 
-    override fun getRewards(): List<HuntReward> {
-        return rewardCollection.find().toList()
-    }
+    override fun getRewards(): List<HuntReward> = rewardCollection.find().toList()
 
-    override fun getReward(id: String): HuntReward? {
-        return rewardCollection.find(Filters.eq("id", id)).first()
-    }
+    override fun getReward(id: String): HuntReward? = rewardCollection.find(Filters.eq("id", id)).first()
 
-    override fun getGlobalHunts(): List<GlobalHunt> {
-        return globalHuntCollection.find().toList()
-    }
+    override fun getGlobalHunts(): List<GlobalHunt> = globalHuntCollection.find().toList()
 
-    override fun getGlobalHuntPools(): List<HuntPool> {
-        return globalHuntPoolCollection.find().toList()
-    }
+    override fun getGlobalHuntPools(): List<HuntPool> = globalHuntPoolCollection.find().toList()
 
-    override fun getGlobalHuntSessions(): Map<String, GlobalHuntSession> {
-        return globalHuntSessionCollection.find().toList().associateBy { it.huntPoolId }
-    }
+    override fun getGlobalHuntSessions(): Map<String, GlobalHuntSession> =
+        globalHuntSessionCollection.find().toList().associateBy { it.huntPoolId }
 
     override fun addGlobalHuntSession(huntSession: GlobalHuntSession): Boolean =
         globalHuntSessionCollection.insertOne(huntSession).wasAcknowledged()
@@ -91,12 +89,29 @@ class MongoDBHandler : DatabaseHandlerInterface {
         )
     }
 
-    override fun getPersonalHunts(): List<Hunt> {
-        TODO("Not yet implemented")
+    override fun getPersonalHunts(): List<Hunt> = personalHuntsCache
+
+    override fun getPersonalHuntSessions(): Map<String, PersonalHunts> =
+        personalHuntSessionCollection.find().toList().associateBy { it.playerUUID }
+
+    fun getPlayerPersonalHuntSessions(playerUUID: String): PersonalHunts? =
+        personalHuntSessionCollection.find(Filters.eq("playerUUID", playerUUID)).first()
+
+    fun addPlayerPersonalHuntSession(playerUUID: String, personalHunts: PersonalHunts) {
+        personalHuntSessionCollection.insertOne(personalHunts)
     }
 
-    override fun getPersonalHuntSessions(): Map<String, PersonalHuntSession> {
-        TODO("Not yet implemented")
+    fun updatePlayerPersonalHuntSession(playerUUID: String, personalHunts: PersonalHunts) {
+        personalHuntSessionCollection.updateOne(
+            Filters.eq("playerUUID", playerUUID), Updates.combine(
+                Updates.set("playerName", personalHunts.playerName),
+                Updates.set("easyHunt", personalHunts.easyHunt),
+                Updates.set("mediumHunt", personalHunts.mediumHunt),
+                Updates.set("hardHunt", personalHunts.hardHunt),
+                Updates.set("legendaryHunt", personalHunts.legendaryHunt),
+                Updates.set("godlikeHunt", personalHunts.godlikeHunt)
+            )
+        )
     }
 
     override fun initPlayerRewardStorage(playerUUID: String, playerName: String) {
@@ -105,9 +120,8 @@ class MongoDBHandler : DatabaseHandlerInterface {
         }
     }
 
-    override fun getPlayerRewardStorage(playerUUID: String): RewardStorage? {
-        return playerRewardStorageCollection.find(Filters.eq("playerUUID", playerUUID)).first()
-    }
+    override fun getPlayerRewardStorage(playerUUID: String): RewardStorage? =
+        playerRewardStorageCollection.find(Filters.eq("playerUUID", playerUUID)).first()
 
     override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>, exp: Int) {
         playerRewardStorageCollection.updateOne(
@@ -126,23 +140,33 @@ class MongoDBHandler : DatabaseHandlerInterface {
     }
 
     override fun removePlayerExp(playerUUID: String) {
-        TODO("Not yet implemented")
+        playerRewardStorageCollection.updateOne(
+            Filters.eq("playerUUID", playerUUID), Updates.set("exp", 0)
+        )
     }
 
     override fun initPlayerExpProgress(playerUUID: String, playerName: String) {
-        TODO("Not yet implemented")
+        if (playerExpProgressCollection.countDocuments(Filters.eq("playerUUID", playerUUID)) == 0L) {
+            playerExpProgressCollection.insertOne(ExpConfigLoader.ExpProgress(playerUUID, playerName, 0))
+        }
     }
 
-    override fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress? {
-        TODO("Not yet implemented")
-    }
+    override fun getPlayerExpProgress(playerUUID: String): ExpConfigLoader.ExpProgress? =
+        playerExpProgressCollection.find(Filters.eq("playerUUID", playerUUID)).first()
 
     override fun addPlayerExp(playerUUID: String, exp: Int) {
-        TODO("Not yet implemented")
+        playerExpProgressCollection.updateOne(
+            Filters.eq("playerUUID", playerUUID), Updates.inc("exp", exp)
+        )
+    }
+
+    fun getRewardById(id: String): HuntReward? {
+        return rewardCollection.find(Filters.eq("id", id)).first()
     }
 
     override fun playerLevel(playerUUID: String): Int {
-        TODO("Not yet implemented")
+        val expProgress = playerExpProgressCollection.find(Filters.eq("playerUUID", playerUUID)).first()
+        return expProgress?.exp?.div(100) ?: 0
     }
 
     override fun ping() {
