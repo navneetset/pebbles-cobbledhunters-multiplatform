@@ -73,15 +73,3 @@ data class Winner(
     val playerUUID: String,
     val playerName: String,
 )
-
-data class PersonalHuntSession(
-    val id: String = UUID.randomUUID().toString(),
-    val huntId: String,
-    val hunt: Hunt,
-    val playerUUID: String,
-    val playerName: String,
-    val startTime: Date,
-    val endTime: Date,
-    var completed: Boolean,
-    var success: Boolean,
-)

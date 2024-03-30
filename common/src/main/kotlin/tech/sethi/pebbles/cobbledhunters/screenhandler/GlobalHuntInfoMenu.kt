@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntDetailScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.global.JSONGlobalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
@@ -204,7 +204,7 @@ class GlobalHuntInfoMenu(
             }
 
             in joinSlots -> {
-                JSONGlobalHuntHandler.joinHunt(player, poolId)
+                GlobalHuntHandler.handler!!.joinHunt(player, poolId)
                 player.closeHandledScreen()
             }
 

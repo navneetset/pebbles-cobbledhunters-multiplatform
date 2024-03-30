@@ -1,6 +1,6 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.type
 
-import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.personal.PersonalHuntHandler
 
 data class PersonalHunts(
     val playerUUID: String,
@@ -13,11 +13,11 @@ data class PersonalHunts(
 ) {
     fun getHuntByDifficulty(difficulty: HuntDifficulties): HuntTracker? {
         return when (difficulty) {
-            HuntDifficulties.EASY -> easyHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.MEDIUM -> mediumHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.HARD -> hardHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.LEGENDARY -> legendaryHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
-            HuntDifficulties.GODLIKE -> godlikeHunt?.let { JSONPersonalHuntHandler.rolledHunts[it] }
+            HuntDifficulties.EASY -> easyHunt?.let { PersonalHuntHandler.handler!!.rolledHunts[it] }
+            HuntDifficulties.MEDIUM -> mediumHunt?.let { PersonalHuntHandler.handler!!.rolledHunts[it] }
+            HuntDifficulties.HARD -> hardHunt?.let { PersonalHuntHandler.handler!!.rolledHunts[it] }
+            HuntDifficulties.LEGENDARY -> legendaryHunt?.let { PersonalHuntHandler.handler!!.rolledHunts[it] }
+            HuntDifficulties.GODLIKE -> godlikeHunt?.let { PersonalHuntHandler.handler!!.rolledHunts[it] }
         }
     }
 
@@ -30,13 +30,13 @@ data class PersonalHunts(
             HuntDifficulties.GODLIKE -> godlikeHunt = huntTracker?.uuid
         }
 
-        huntTracker?.let { JSONPersonalHuntHandler.rolledHunts[it.uuid] = it }
+        huntTracker?.let { PersonalHuntHandler.handler!!.rolledHunts[it.uuid] = it }
     }
 
     fun getHunts(): List<HuntTracker?> {
         return listOf(
             easyHunt, mediumHunt, hardHunt, legendaryHunt, godlikeHunt
-        ).map { it?.let { JSONPersonalHuntHandler.rolledHunts[it] } }
+        ).map { it?.let { PersonalHuntHandler.handler!!.rolledHunts[it] } }
     }
 
     fun getActiveHunt(): HuntTracker? {

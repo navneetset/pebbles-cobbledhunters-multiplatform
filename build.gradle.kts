@@ -45,6 +45,7 @@ allprojects {
 
     dependencies {
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
+
     }
 
     tasks.withType<JavaCompile> {

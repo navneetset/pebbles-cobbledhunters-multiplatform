@@ -14,7 +14,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.PersonalHuntDetailScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.personal.PersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
@@ -24,6 +24,8 @@ class PersonalHuntInfoMenu(
 ) : GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, player.inventory, SimpleInventory(9 * 6), 6) {
 
     val config = PersonalHuntDetailScreenConfig.config
+
+    val handler = PersonalHuntHandler.handler!!
 
     val rewardSlots = config.rewardSlots
     val startSlots = config.startSlots
@@ -165,7 +167,7 @@ class PersonalHuntInfoMenu(
             in startSlots -> {
                 if (huntTracker.active.not()) {
                     // check if hunt is expired
-                    val activated = JSONPersonalHuntHandler.activateHunt(
+                    val activated = handler.activateHunt(
                         player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
                     )
                     if (activated) {
@@ -177,7 +179,7 @@ class PersonalHuntInfoMenu(
 
             in cancelSlots -> {
                 if (huntTracker.active) {
-                    JSONPersonalHuntHandler.cancelHunt(
+                    handler.cancelHunt(
                         player.uuidAsString, player.name.string, huntTracker.hunt.difficulty
                     )
                     player.closeHandledScreen()

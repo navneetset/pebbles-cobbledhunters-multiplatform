@@ -3,21 +3,15 @@ package tech.sethi.pebbles.cobbledhunters.hunt.global
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
-import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
-import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntConfigLoader
-import tech.sethi.pebbles.cobbledhunters.config.hunt.global.GlobalHuntPoolConfigLoader
-import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
-import tech.sethi.pebbles.cobbledhunters.hunt.personal.JSONPersonalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class AbstractGlobalHuntHandler {
-    val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
-    val activeBossbars: ConcurrentHashMap<String, ServerBossBar> = ConcurrentHashMap()
+    abstract val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?>
+    abstract val activeBossbars: ConcurrentHashMap<String, ServerBossBar>
 
 
     fun canJoinHunt(player: ServerPlayerEntity, poolId: String): Pair<Boolean, String> {

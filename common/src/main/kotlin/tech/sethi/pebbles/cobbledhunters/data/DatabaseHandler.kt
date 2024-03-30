@@ -11,12 +11,11 @@ object DatabaseHandler {
     }
 
     fun reload() {
-        db = when (DatastoreConfig.datastoreConfig.datastore) {
+        db = when (DatastoreConfig.config.datastore) {
             DatastoreConfig.DatastoreType.MONGODB -> MongoDBHandler()
-            DatastoreConfig.DatastoreType.MYSQL -> MongoDBHandler()
             DatastoreConfig.DatastoreType.JSON -> JSONHandler()
         }
 
-        CobbledHunters.LOGGER.info("Pebble's Cobbled Hunters: Using ${DatastoreConfig.datastoreConfig.datastore} as the datastore")
+        CobbledHunters.LOGGER.info("Pebble's Cobbled Hunters: Using ${DatastoreConfig.config.datastore} as the datastore")
     }
 }

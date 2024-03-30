@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
@@ -24,6 +25,15 @@ dependencies {
     implementation("net.kyori:adventure-api:${property("minimessage_version")}")
     implementation("net.kyori:adventure-text-minimessage:${property("minimessage_version")}")
     implementation("net.kyori:adventure-text-serializer-gson:${property("minimessage_version")}")
+
+
+    implementation("io.ktor:ktor-client-core:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-cio:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-serialization:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-websockets:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-core-jvm:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-cio-jvm:${rootProject.property("ktor_version")}")
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
 
     implementation("org.mongodb:mongodb-driver-core:${property("mongo_version")}")
     implementation("org.mongodb:mongodb-driver-sync:${property("mongo_version")}")

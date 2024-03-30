@@ -38,10 +38,24 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-gson:${property("minimessage_version")}")
     implementation("net.kyori:adventure-text-serializer-legacy:${property("minimessage_version")}")
 
+    implementation("io.ktor:ktor-client-core:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-cio:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-serialization:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-websockets:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-core-jvm:${rootProject.property("ktor_version")}")
+    implementation("io.ktor:ktor-client-cio-jvm:${rootProject.property("ktor_version")}")
+
     shadowCommon("net.kyori:adventure-api:${property("minimessage_version")}")
     shadowCommon("net.kyori:adventure-text-minimessage:${property("minimessage_version")}")
     shadowCommon("net.kyori:adventure-text-serializer-gson:${property("minimessage_version")}")
     shadowCommon("net.kyori:adventure-text-serializer-legacy:${property("minimessage_version")}")
+
+    shadowCommon("io.ktor:ktor-client-core:${rootProject.property("ktor_version")}")
+    shadowCommon("io.ktor:ktor-client-cio:${rootProject.property("ktor_version")}")
+    shadowCommon("io.ktor:ktor-client-serialization:${rootProject.property("ktor_version")}")
+    shadowCommon("io.ktor:ktor-client-websockets:${rootProject.property("ktor_version")}")
+    shadowCommon("io.ktor:ktor-client-core-jvm:${rootProject.property("ktor_version")}")
+    shadowCommon("io.ktor:ktor-client-cio-jvm:${rootProject.property("ktor_version")}")
 
     modImplementation("com.cobblemon:fabric:1.4.0+1.20.1")
 

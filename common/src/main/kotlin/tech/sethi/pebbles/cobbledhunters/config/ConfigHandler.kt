@@ -67,11 +67,11 @@ object ConfigHandler {
             return itemStack
         }
 
-        fun deepCopy(): SerializedItemStack {
-            return SerializedItemStack(
-                displayName, material, amount, nbt, lore.toMutableList()
-            )
-        }
+            fun deepCopy(): SerializedItemStack {
+                return SerializedItemStack(
+                    displayName, material, amount, nbt, lore.toMutableList()
+                )
+            }
     }
 
 }

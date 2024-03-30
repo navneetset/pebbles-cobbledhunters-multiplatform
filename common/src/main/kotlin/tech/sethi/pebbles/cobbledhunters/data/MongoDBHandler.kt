@@ -34,6 +34,8 @@ class MongoDBHandler : DatabaseHandlerInterface {
     val personalHuntCollection = database.getCollection(config.personalHuntCollection, Hunt::class.java)
     val personalHuntSessionCollection =
         database.getCollection(config.personalHuntSessionCollection, PersonalHunts::class.java)
+    val rolledHuntTrackerCollection =
+        database.getCollection(config.rolledHuntTrackerCollection, HuntTracker::class.java)
 
     val playerRewardStorageCollection =
         database.getCollection(config.playerRewardStorageCollection, RewardStorage::class.java)
@@ -110,6 +112,29 @@ class MongoDBHandler : DatabaseHandlerInterface {
                 Updates.set("hardHunt", personalHunts.hardHunt),
                 Updates.set("legendaryHunt", personalHunts.legendaryHunt),
                 Updates.set("godlikeHunt", personalHunts.godlikeHunt)
+            )
+        )
+    }
+
+    fun getRolledHuntTracker(uuid: String): HuntTracker? =
+        rolledHuntTrackerCollection.find(Filters.eq("uuid", uuid)).first()
+
+    fun addRolledHuntTracker(huntTracker: HuntTracker): Boolean =
+        rolledHuntTrackerCollection.insertOne(huntTracker).wasAcknowledged()
+
+    fun updateRolledHuntTracker(huntTracker: HuntTracker) {
+        rolledHuntTrackerCollection.updateOne(
+            Filters.eq("uuid", huntTracker.uuid), Updates.combine(
+                Updates.set("hunt", huntTracker.hunt),
+                Updates.set("rolledTime", huntTracker.rolledTime),
+                Updates.set("expireTime", huntTracker.expireTime),
+                Updates.set("startTime", huntTracker.startTime),
+                Updates.set("endTime", huntTracker.endTime),
+                Updates.set("active", huntTracker.active),
+                Updates.set("success", huntTracker.success),
+                Updates.set("progress", huntTracker.progress),
+                Updates.set("participants", huntTracker.participants),
+                Updates.set("rewarded", huntTracker.rewarded)
             )
         )
     }

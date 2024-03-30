@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntScreenConfig
-import tech.sethi.pebbles.cobbledhunters.hunt.global.JSONGlobalHuntHandler
+import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 
@@ -45,7 +45,7 @@ class GlobalHuntMenu(
         huntSlots.forEach { huntSlot ->
             // modify {ongoing_hunt} in lore to show the current hunt and remaining time
             val lore = huntSlot.itemStack.lore.toMutableList()
-            val tracker = JSONGlobalHuntHandler.globalHuntPools[huntSlot.huntPoolId] ?: return
+            val tracker = GlobalHuntHandler.handler!!.globalHuntPools[huntSlot.huntPoolId] ?: return
             val timeRemaining = tracker.expireTime.minus(System.currentTimeMillis())
             val timeRemainingString = PM.formatTime(timeRemaining)
             lore.replaceAll { it.replace("{refresh_time}", timeRemainingString) }
@@ -84,7 +84,7 @@ class GlobalHuntMenu(
         when {
             huntSlots.any { it.slot == slotIndex } -> {
                 val huntSlot = huntSlots.find { it.slot == slotIndex } ?: return
-                val tracker = JSONGlobalHuntHandler.globalHuntPools[huntSlot.huntPoolId] ?: return
+                val tracker = GlobalHuntHandler.handler!!.globalHuntPools[huntSlot.huntPoolId] ?: return
                 ScreenRefresher.removeGlobalHuntMenu(player.uuidAsString)
                 player.openHandledScreen(globalHuntInfoMenuScreenHandlerFactory(player, tracker, huntSlot.huntPoolId))
             }

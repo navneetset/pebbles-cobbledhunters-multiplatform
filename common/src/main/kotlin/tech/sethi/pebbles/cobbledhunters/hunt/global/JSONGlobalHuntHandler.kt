@@ -6,6 +6,7 @@ import com.cobblemon.mod.common.util.server
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.*
+import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
@@ -19,9 +20,13 @@ import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
 import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 import java.lang.Thread.sleep
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 object JSONGlobalHuntHandler : AbstractGlobalHuntHandler() {
+
+    override val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
+    override val activeBossbars: ConcurrentHashMap<String, ServerBossBar> = ConcurrentHashMap()
 
     val globalHuntWorker = Executors.newSingleThreadExecutor()
 

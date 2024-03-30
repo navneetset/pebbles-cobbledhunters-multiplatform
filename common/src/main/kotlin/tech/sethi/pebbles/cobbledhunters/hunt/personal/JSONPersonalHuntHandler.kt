@@ -6,8 +6,6 @@ import com.cobblemon.mod.common.util.server
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import kotlinx.coroutines.*
-import net.minecraft.entity.boss.BossBar.Color
-import net.minecraft.entity.boss.BossBar.Style
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
@@ -17,6 +15,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
+import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntGoals
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
@@ -30,7 +29,6 @@ import tech.sethi.pebbles.partyapi.eventlistener.LeavePartyEvent
 import java.lang.Thread.sleep
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 
 object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
     override val personalHunts = ConcurrentHashMap<String, PersonalHunts>()
@@ -220,6 +218,8 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                 return false
             }
         }
+
+        EconomyHandler.economy.withdraw(UUID.fromString(playerUUID), huntTracker.hunt.cost.toDouble())
 
         startHunt(huntTracker)
         val bossBarTextWithProgress = createBossBarText(huntTracker)

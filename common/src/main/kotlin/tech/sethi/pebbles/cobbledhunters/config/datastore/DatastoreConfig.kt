@@ -8,18 +8,18 @@ object DatastoreConfig {
     val gson = ConfigHandler.gson
     val datastoreConfigFile = File("config/pebbles-cobbledhunters/datastore/datastore.json")
     val mongoDbConfigFile = File("config/pebbles-cobbledhunters/datastore/mongodb.json")
-    val mySQLConfigFile = File("config/pebbles-cobbledhunters/datastore/mysql.json")
     val jsonConfigFile = File("config/pebbles-cobbledhunters/datastore/json.json")
+    val webSocketConfigFile = File("config/pebbles-cobbledhunters/datastore/websocket.json")
 
     private val datastoreConfigHandler = ConfigFileHandler(DatastoreConfig::class.java, datastoreConfigFile, gson)
     private val mongoDbConfigHandler = ConfigFileHandler(MongoDBConfig::class.java, mongoDbConfigFile, gson)
-    private val mySQLConfigHandler = ConfigFileHandler(MySQLConfig::class.java, mySQLConfigFile, gson)
     private val jsonConfigHandler = ConfigFileHandler(JsonConfig::class.java, jsonConfigFile, gson)
+    private val webSocketConfigHandler = ConfigFileHandler(WebSocketConfig::class.java, webSocketConfigFile, gson)
 
-    var datastoreConfig = DatastoreConfig()
+    var config = DatastoreConfig()
     var mongoDbConfig = MongoDBConfig()
-    var mySQLConfig = MySQLConfig()
     var jsonConfig = JsonConfig()
+    var webSocketConfig = WebSocketConfig()
 
     init {
         reload()
@@ -28,30 +28,26 @@ object DatastoreConfig {
 
     fun reload() {
         datastoreConfigHandler.reload()
-        datastoreConfig = datastoreConfigHandler.config
+        config = datastoreConfigHandler.config
         mongoDbConfigHandler.reload()
         mongoDbConfig = mongoDbConfigHandler.config
-        mySQLConfigHandler.reload()
-        mySQLConfig = mySQLConfigHandler.config
         jsonConfigHandler.reload()
         jsonConfig = jsonConfigHandler.config
+        webSocketConfigHandler.reload()
+        webSocketConfig = webSocketConfigHandler.config
     }
-
 
 
     enum class DatastoreType {
-        JSON, MONGODB, MYSQL
+        JSON, MONGODB
     }
 
     data class DatastoreConfig(
-        val datastore: DatastoreType = DatastoreType.JSON,
-        val triggerAndRewardServer: Boolean = true
+        val datastore: DatastoreType = DatastoreType.JSON, val triggerAndRewardServer: Boolean = true
     )
 
     data class JsonConfig(
-        val enableBackup: Boolean = true,
-        val backupIntervalMinutes: Int = 60,
-        val maxBackups: Int = 24
+        val enableBackup: Boolean = true, val backupIntervalMinutes: Int = 60, val maxBackups: Int = 24
     )
 
     data class MongoDBConfig(
@@ -62,19 +58,17 @@ object DatastoreConfig {
         val globalHuntSessionCollection: String = "GlobalHuntSessions",
         val personalHuntCollection: String = "PersonalHunts",
         val personalHuntPoolCollection: String = "PersonalHuntPools",
+        val personalHuntSessionCollection: String = "PersonalHuntSessions",
+        val rolledHuntTrackerCollection: String = "RolledHuntTrackers",
         val playerHuntCollection: String = "PlayerHunts",
         val rewardCollection: String = "Rewards",
         val rewardPoolCollection: String = "RewardPools",
-        val personalHuntSessionCollection: String = "PersonalHuntSessions",
         val playerRewardStorageCollection: String = "PlayerRewardStorage",
         val playerExpProgressCollection: String = "PlayerExpProgress"
     )
 
-    data class MySQLConfig(
-        val connectionString: String = "jdbc:mysql://root@localhost/pebbles_cobbledhunters",
-        val database: String = "pebbles_cobbledhunters",
-        val globalHuntTable: String = "GlobalHunts",
-        val huntPoolTable: String = "HuntPools",
-        val playerHuntTable: String = "PlayerHunts"
+    data class WebSocketConfig(
+        val secret: String = "RANDOMSECRETHERE",
+        val webSocket: String = "ws://localhost:9999/cobbled-hunters",
     )
 }

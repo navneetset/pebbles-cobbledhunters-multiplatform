@@ -15,7 +15,7 @@ import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
 import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.data.MongoDBHandler
-import tech.sethi.pebbles.cobbledhunters.data.RedisHandler
+import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntDifficulties
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntGoals
 import tech.sethi.pebbles.cobbledhunters.hunt.type.HuntTracker
@@ -57,8 +57,6 @@ object MongoPersonalHuntHandler : AbstractPersonalHuntHandler() {
 
         personalHuntWorker.submit {
             while (server() != null && server()!!.isRunning) {
-
-
                 // update bossbar time progress
                 activeBossbars.forEach { (uuid, bossbar) ->
                     val huntTracker = rolledHunts[uuid] ?: return@forEach
@@ -177,18 +175,12 @@ object MongoPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     val player = PM.getPlayer(playerName) ?: return
                     PM.sendText(player, LangConfig.config.huntTimeEnded)
                     cancelHunt(playerUUID, playerName, difficulty)
-                    RedisHandler.publish(
-                        RedisHandler.RedisMessage.phExpired(
-                            RedisHandler.HuntCancellation(playerUUID, playerName, difficulty)
-                        )
-                    )
+
                 }
 
                 val randomHunt = allHunts.filter { it.difficulty == difficulty }.random()
 
-                randomHunt.rewardPools.forEach {
-                    it.reward = it.getRolledReward()
-                }
+                randomHunt.rewardPools.forEach { it.reward = it.getRolledReward() }
 
                 val expireMinutes = when (difficulty) {
                     HuntDifficulties.EASY -> BaseConfig.config.easyRefreshTime
@@ -209,9 +201,15 @@ object MongoPersonalHuntHandler : AbstractPersonalHuntHandler() {
                     success = null
                 )
 
-                personalHunts.setHuntByDifficulty(
-                    difficulty, newHunt
-                )
+                val ack = db.addRolledHuntTracker(newHunt)
+
+                if (ack) {
+                    personalHunts.setHuntByDifficulty(
+                        difficulty, newHunt
+                    )
+
+                    db.updatePlayerPersonalHuntSession(playerUUID, personalHunts)
+                }
             }
         }
 
@@ -253,7 +251,10 @@ object MongoPersonalHuntHandler : AbstractPersonalHuntHandler() {
             }
         }
 
+        EconomyHandler.economy.withdraw(UUID.fromString(playerUUID), huntTracker.hunt.cost.toDouble())
+
         startHunt(huntTracker)
+
         val bossBarTextWithProgress = createBossBarText(huntTracker)
         val bossbar = createServerBossBar(bossBarTextWithProgress)
 
