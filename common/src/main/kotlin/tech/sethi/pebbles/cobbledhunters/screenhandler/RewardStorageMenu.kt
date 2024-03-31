@@ -51,7 +51,7 @@ class RewardStorageMenu(
             1.0f,
             player.blockPos,
             player.world,
-            8.0,
+            2.0,
             player
         )
     }

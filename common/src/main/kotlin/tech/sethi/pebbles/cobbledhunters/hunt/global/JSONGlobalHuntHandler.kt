@@ -25,7 +25,7 @@ import java.util.concurrent.Executors
 
 object JSONGlobalHuntHandler : AbstractGlobalHuntHandler() {
 
-    override val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
+    override var globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
     override val activeBossbars: ConcurrentHashMap<String, ServerBossBar> = ConcurrentHashMap()
 
     val globalHuntWorker = Executors.newSingleThreadExecutor()
@@ -164,7 +164,7 @@ object JSONGlobalHuntHandler : AbstractGlobalHuntHandler() {
                             1.5f,
                             player.blockPos,
                             player.world,
-                            2.0,
+                            8.0,
                             player
                         )
                     }

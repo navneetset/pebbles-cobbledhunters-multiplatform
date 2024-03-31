@@ -10,7 +10,7 @@ import tech.sethi.pebbles.cobbledhunters.util.PM
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class AbstractGlobalHuntHandler {
-    abstract val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?>
+    abstract var globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?>
     abstract val activeBossbars: ConcurrentHashMap<String, ServerBossBar>
 
 

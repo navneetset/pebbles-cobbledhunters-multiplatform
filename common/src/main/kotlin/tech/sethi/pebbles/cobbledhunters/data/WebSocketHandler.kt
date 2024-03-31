@@ -15,6 +15,7 @@ import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.global.MongoGlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.GlobalHuntTracker
 import tech.sethi.pebbles.cobbledhunters.hunt.type.Participant
+import java.util.concurrent.ConcurrentHashMap
 
 object WebSocketHandler {
     val job = Job()
@@ -75,6 +76,19 @@ object WebSocketHandler {
                         GlobalHuntHandler.handler!!.globalHuntPools[trackerUpdate.poolId] = trackerUpdate.tracker
                     }
 
+                    SocketMessageType.GLOBA_HUNT_POOLS_REFRESH -> {
+                        CobbledHunters.LOGGER.info("Received Global Hunt Pools Refresh")
+                        val poolsRefresh = gson.fromJson(socketMessage.json, GlobalHuntPoolsRefresh::class.java)
+                        val pools = poolsRefresh.pools
+                        val concurrentHashmapPools = mutableMapOf<String, GlobalHuntTracker?>()
+                        pools.forEach { (poolId, tracker) ->
+                            concurrentHashmapPools[poolId] = tracker
+                        }
+
+                        GlobalHuntHandler.handler!!.globalHuntPools =
+                            concurrentHashmapPools as ConcurrentHashMap<String, GlobalHuntTracker?>
+                    }
+
                     else -> {
                         // Do nothing
                     }
@@ -90,7 +104,7 @@ object WebSocketHandler {
     }
 
     enum class SocketMessageType {
-        GLOBAL_HUNT_JOIN_HUNT, GLOBAL_HUNT_POKEMON_ACTION, GLOBAL_HUNT_TRACKER_UPDATE
+        GLOBAL_HUNT_JOIN_HUNT, GLOBAL_HUNT_POKEMON_ACTION, GLOBAL_HUNT_TRACKER_UPDATE, GLOBA_HUNT_POOLS_REFRESH
     }
 
     data class SocketMessage(
@@ -107,6 +121,10 @@ object WebSocketHandler {
 
     data class PokemonAction(
         val participant: Participant, val feature: MongoGlobalHuntHandler.PokemonFeature
+    )
+
+    data class GlobalHuntPoolsRefresh(
+        val pools: MutableMap<String, GlobalHuntTracker?>
     )
 
 }

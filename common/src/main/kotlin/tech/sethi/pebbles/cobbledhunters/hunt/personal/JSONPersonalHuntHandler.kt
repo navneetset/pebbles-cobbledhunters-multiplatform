@@ -436,7 +436,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                                                 1.5f,
                                                 member.blockPos,
                                                 member.world,
-                                                2.0,
+                                                8.0,
                                                 member
                                             )
                                         }
@@ -460,7 +460,7 @@ object JSONPersonalHuntHandler : AbstractPersonalHuntHandler() {
                                 1.5f,
                                 player.blockPos,
                                 player.world,
-                                2.0,
+                                8.0,
                                 player
                             )
                         }

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 object MongoGlobalHuntHandler : AbstractGlobalHuntHandler() {
-    override val globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
+    override var globalHuntPools: ConcurrentHashMap<String, GlobalHuntTracker?> = ConcurrentHashMap()
     override val activeBossbars: ConcurrentHashMap<String, ServerBossBar> = ConcurrentHashMap()
 
     val globalHuntWorker = Executors.newSingleThreadExecutor()

@@ -45,7 +45,7 @@ class GlobalHuntMenu(
         huntSlots.forEach { huntSlot ->
             // modify {ongoing_hunt} in lore to show the current hunt and remaining time
             val lore = huntSlot.itemStack.lore.toMutableList()
-            val tracker = GlobalHuntHandler.handler!!.globalHuntPools[huntSlot.huntPoolId] ?: return
+            val tracker = GlobalHuntHandler.handler!!.globalHuntPools[huntSlot.huntPoolId] ?: return@forEach
             val timeRemaining = tracker.expireTime.minus(System.currentTimeMillis())
             val timeRemainingString = PM.formatTime(timeRemaining)
             lore.replaceAll { it.replace("{refresh_time}", timeRemainingString) }
@@ -77,7 +77,7 @@ class GlobalHuntMenu(
             1.0f,
             player!!.blockPos,
             player.world,
-            8.0,
+            2.0,
             player as ServerPlayerEntity
         )
 
@@ -106,7 +106,7 @@ class GlobalHuntMenu(
             1.0f,
             player!!.blockPos,
             player.world,
-            8.0,
+            2.0,
             player as ServerPlayerEntity
         )
 
