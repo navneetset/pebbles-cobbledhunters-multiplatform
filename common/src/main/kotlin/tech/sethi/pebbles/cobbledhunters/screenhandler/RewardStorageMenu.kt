@@ -65,8 +65,8 @@ class RewardStorageMenu(
             // generate reward item based on page
             val rewardIndex = (currentPage - 1) * 18 + index
             if (rewardsCache.size > rewardIndex) {
-                val reward = rewardsCache.values.elementAt(rewardIndex)
-                val rewardKey = rewardsCache.keys.elementAt(rewardIndex)
+                val reward = rewardsCache.elementAt(rewardIndex).reward
+                val rewardKey = rewardsCache.elementAt(rewardIndex).uuid
                 val stack = reward.displayItem.toItemStack()
                 stack.orCreateNbt.putUuid("reward_id", UUID.fromString(rewardKey))
                 inventory.setStack(slot, stack)
@@ -121,8 +121,8 @@ class RewardStorageMenu(
                     val clickedStack = inventory.getStack(slotIndex)
                     if (clickedStack.isEmpty) return
                     val rewardId = clickedStack.orCreateNbt.getUuid("reward_id")
-                    val reward = rewardsCache[rewardId.toString()] ?: return
-                    rewardsCache.remove(rewardId.toString())
+                    val reward = rewardsCache[rewardIndex].reward
+                    rewardsCache.removeAt(rewardIndex)
                     rewardsToRemove.add(rewardId.toString())
                     reward.executeCommands(player)
                     setupPage()
@@ -173,7 +173,11 @@ class RewardStorageMenu(
             2.0,
             player as ServerPlayerEntity
         )
-        DatabaseHandler.db!!.removePlayerRewards(player.uuidAsString, rewardsToRemove)
+
+        if (rewardsToRemove.isEmpty().not()) {
+            DatabaseHandler.db!!.removePlayerRewards(player.uuidAsString, rewardsToRemove)
+        }
+
         super.onClosed(player)
     }
 

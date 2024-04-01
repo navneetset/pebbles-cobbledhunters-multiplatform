@@ -1,5 +1,6 @@
 package tech.sethi.pebbles.cobbledhunters.data
 
+import com.cobblemon.mod.common.util.server
 import com.google.gson.Gson
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -9,12 +10,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import net.minecraft.sound.SoundCategory
+import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.CobbledHunters
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
 import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.global.MongoGlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.GlobalHuntTracker
 import tech.sethi.pebbles.cobbledhunters.hunt.type.Participant
+import tech.sethi.pebbles.cobbledhunters.util.PM
+import tech.sethi.pebbles.cobbledhunters.util.UnvalidatedSound
 import java.util.concurrent.ConcurrentHashMap
 
 object WebSocketHandler {
@@ -54,7 +59,7 @@ object WebSocketHandler {
             webSocketSession = this // Set the webSocketSession for later use
             var connected = false
             send(Frame.Text(DatastoreConfig.webSocketConfig.secret))
-            while (true) {
+            while (server() != null && server()!!.isRunning) {
                 if (!connected) {
                     CobbledHunters.LOGGER.info("Cobbled Hunters: Connected to WebSocket!")
                     connected = true
@@ -71,13 +76,11 @@ object WebSocketHandler {
 
                 when (socketMessage.type) {
                     SocketMessageType.GLOBAL_HUNT_TRACKER_UPDATE -> {
-                        CobbledHunters.LOGGER.info("Received Global Hunt Tracker Update")
                         val trackerUpdate = gson.fromJson(socketMessage.json, GlobalHuntTrackerUpdate::class.java)
                         GlobalHuntHandler.handler!!.globalHuntPools[trackerUpdate.poolId] = trackerUpdate.tracker
                     }
 
                     SocketMessageType.GLOBA_HUNT_POOLS_REFRESH -> {
-                        CobbledHunters.LOGGER.info("Received Global Hunt Pools Refresh")
                         val poolsRefresh = gson.fromJson(socketMessage.json, GlobalHuntPoolsRefresh::class.java)
                         val pools = poolsRefresh.pools
                         val concurrentHashmapPools = mutableMapOf<String, GlobalHuntTracker?>()
@@ -87,6 +90,21 @@ object WebSocketHandler {
 
                         GlobalHuntHandler.handler!!.globalHuntPools =
                             concurrentHashmapPools as ConcurrentHashMap<String, GlobalHuntTracker?>
+                    }
+
+                    SocketMessageType.PLAY_SOUND -> {
+                        val playSound = gson.fromJson(socketMessage.json, PlaySound::class.java)
+                        val player = PM.getPlayer(playSound.uuid) ?: continue
+                        UnvalidatedSound.playToPlayer(
+                            Identifier(playSound.sound.split(":")[0], playSound.sound.split(":")[1]),
+                            SoundCategory.MASTER,
+                            playSound.volume,
+                            playSound.pitch,
+                            player.blockPos,
+                            player.world,
+                            playSound.radius,
+                            player
+                        )
                     }
 
                     else -> {
@@ -104,7 +122,7 @@ object WebSocketHandler {
     }
 
     enum class SocketMessageType {
-        GLOBAL_HUNT_JOIN_HUNT, GLOBAL_HUNT_POKEMON_ACTION, GLOBAL_HUNT_TRACKER_UPDATE, GLOBA_HUNT_POOLS_REFRESH
+        GLOBAL_HUNT_JOIN_HUNT, GLOBAL_HUNT_POKEMON_ACTION, GLOBAL_HUNT_TRACKER_UPDATE, GLOBA_HUNT_POOLS_REFRESH, PLAY_SOUND
     }
 
     data class SocketMessage(
@@ -127,4 +145,8 @@ object WebSocketHandler {
         val pools: MutableMap<String, GlobalHuntTracker?>
     )
 
+
+    data class PlaySound(
+        val uuid: String, val sound: String, val volume: Float = 1.0f, val pitch: Float = 1.0f, val radius: Double = 2.0
+    )
 }

@@ -31,6 +31,7 @@ object LangConfig {
         val huntLevelRequirement: String = "<gold>[CobbledHunters] <red>You do not have the required level to start this hunt",
         val splitRewardLore: String = "<gold>Reward shared with party <aqua>[{party_size}x split]<aqua>",
         val rewardAdded: String = "<gold>[CobbledHunters] <green>Reward added to your reward storage",
+        val noProgress: String = "<gold>[CobbledHunters] <red>You made no progress in the hunt and received no rewards.",
         val huntCancelled: String = "<gold>[CobbledHunters] <red>Hunt has been cancelled",
         val huntAlreadyActive: String = "<gold>[CobbledHunters] <red>You already have an active hunt. Either finish or cancel it",
         val huntExpired: String = "<gold>[CobbledHunters] <red>Hunt has already expired. Please pick another one.",

@@ -104,13 +104,13 @@ class JSONHandler : DatabaseHandlerInterface {
     override fun addPlayerRewards(playerUUID: String, rewards: List<HuntReward>, exp: Int) {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
         rewardStorage.exp += exp
-        rewards.forEach { rewardStorage.rewards[UUID.randomUUID().toString()] = it }
+        rewards.forEach { rewardStorage.rewards.add(RewardEntry(UUID.randomUUID().toString(), it)) }
         rewardStorageLoader.save(rewardStorage)
     }
 
     override fun removePlayerRewards(playerUUID: String, uuids: List<String>) {
         val rewardStorage = rewardStorageLoader.getRewardStorage(playerUUID)
-        uuids.forEach { rewardStorage.rewards.remove(it) }
+        uuids.forEach { rewardStorage.rewards.removeIf { entry -> entry.uuid == it } }
         rewardStorageLoader.save(rewardStorage)
     }
 

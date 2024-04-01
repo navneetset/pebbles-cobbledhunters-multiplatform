@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager
 import tech.sethi.pebbles.cobbledhunters.command.HuntCommand
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
+import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.data.WebSocketHandler
 import tech.sethi.pebbles.cobbledhunters.economy.EconomyHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
@@ -41,11 +42,14 @@ object CobbledHunters {
         }
 
         LifecycleEvent.SERVER_STARTED.register {
+            DatabaseHandler
             PersonalHuntHandler
             GlobalHuntHandler
             EconomyHandler
 
-            WebSocketHandler
+            if (DatastoreConfig.config.datastore == DatastoreConfig.DatastoreType.MONGODB) {
+                WebSocketHandler
+            }
         }
 
         CobblemonEvents.POKEMON_CAPTURED.subscribe { event ->

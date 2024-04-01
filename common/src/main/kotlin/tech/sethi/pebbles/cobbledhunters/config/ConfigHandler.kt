@@ -2,6 +2,7 @@ package tech.sethi.pebbles.cobbledhunters.config
 
 import com.google.gson.GsonBuilder
 import net.minecraft.item.ItemStack
+import org.bson.Document
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.BaseConfig
 import tech.sethi.pebbles.cobbledhunters.config.baseconfig.LangConfig
 import tech.sethi.pebbles.cobbledhunters.config.datastore.DatastoreConfig
@@ -67,11 +68,10 @@ object ConfigHandler {
             return itemStack
         }
 
-            fun deepCopy(): SerializedItemStack {
-                return SerializedItemStack(
-                    displayName, material, amount, nbt, lore.toMutableList()
-                )
-            }
+        fun deepCopy(): SerializedItemStack {
+            return SerializedItemStack(
+                displayName, material, amount, nbt, lore.toMutableList()
+            )
+        }
     }
-
 }

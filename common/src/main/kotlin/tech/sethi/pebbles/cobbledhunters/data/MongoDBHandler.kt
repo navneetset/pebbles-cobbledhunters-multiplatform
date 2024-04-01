@@ -159,10 +159,10 @@ class MongoDBHandler : DatabaseHandlerInterface {
     }
 
     override fun removePlayerRewards(playerUUID: String, uuids: List<String>) {
-        playerRewardStorageCollection.updateOne(
-            Filters.eq("playerUUID", playerUUID), Updates.pullAll("rewards", uuids)
-        )
+        val pullCondition = Updates.pull("rewards", Filters.`in`("uuid", uuids))
+        playerRewardStorageCollection.updateOne(Filters.eq("playerUUID", playerUUID), pullCondition)
     }
+
 
     override fun removePlayerExp(playerUUID: String) {
         playerRewardStorageCollection.updateOne(

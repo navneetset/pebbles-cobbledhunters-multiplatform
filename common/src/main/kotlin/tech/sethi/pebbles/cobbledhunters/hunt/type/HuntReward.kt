@@ -1,6 +1,7 @@
 package tech.sethi.pebbles.cobbledhunters.hunt.type
 
 import net.minecraft.server.network.ServerPlayerEntity
+import org.bson.Document
 import tech.sethi.pebbles.cobbledhunters.config.ConfigHandler
 import tech.sethi.pebbles.cobbledhunters.util.PM
 

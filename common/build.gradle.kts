@@ -37,6 +37,7 @@ dependencies {
 
     implementation("org.mongodb:mongodb-driver-core:${property("mongo_version")}")
     implementation("org.mongodb:mongodb-driver-sync:${property("mongo_version")}")
+    api("org.mongodb:bson-kotlin:${property("mongo_version")}")
     implementation(files("libs/mariadb-jdbc-3.1.4+20230506-all.jar"))
 
     modImplementation(files("libs/pebbles-economy-1.0.0.jar"))
@@ -45,8 +46,6 @@ dependencies {
     modImplementation(files("libs/pebbles-partyapi-1.0.0.jar"))
 
     modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
-
-    implementation("redis.clients:jedis:5.1.0")
 
     compileOnly("net.luckperms:api:5.4")
 }
