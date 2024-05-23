@@ -45,6 +45,8 @@ class MongoDBHandler : DatabaseHandlerInterface {
     var personalHuntsCache: List<Hunt> = personalHuntCollection.find().toList()
     var globalHuntPoolsCache: List<HuntPool> = globalHuntPoolCollection.find().toList()
 
+    var cachedRewards: List<HuntReward> = rewardCollection.find().toList()
+
     init {
         CoroutineScope(Dispatchers.IO).launch {
             if (globalHuntCollection.countDocuments() == 0L) spiderHuntList.forEach { globalHuntCollection.insertOne(it) }
@@ -67,11 +69,12 @@ class MongoDBHandler : DatabaseHandlerInterface {
 
     override fun reload() {
         personalHuntsCache = personalHuntCollection.find().toList()
+        cachedRewards = rewardCollection.find().toList()
     }
 
-    override fun getRewards(): List<HuntReward> = rewardCollection.find().toList()
+    override fun getRewards(): List<HuntReward> = cachedRewards
 
-    override fun getReward(id: String): HuntReward? = rewardCollection.find(Filters.eq("id", id)).first()
+    override fun getReward(id: String): HuntReward? = cachedRewards.find { it.id == id }
 
     override fun getGlobalHunts(): List<GlobalHunt> = globalHuntCollection.find().toList()
 

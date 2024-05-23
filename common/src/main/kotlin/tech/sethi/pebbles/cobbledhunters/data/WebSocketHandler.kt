@@ -34,7 +34,7 @@ object WebSocketHandler {
     init {
         wsScope.launch {
             var retries = 0 // Initialize retry counter
-            while (retries < 20) {
+            while (retries < 20 && server() != null && server()!!.isRunning) {
                 try {
                     connectWebSocket() // Function to connect to WebSocket
                     retries = 0 // Reset retry counter upon successful connection
@@ -58,7 +58,12 @@ object WebSocketHandler {
         client.webSocket(DatastoreConfig.webSocketConfig.webSocket) {
             webSocketSession = this // Set the webSocketSession for later use
             var connected = false
-            send(Frame.Text(DatastoreConfig.webSocketConfig.secret))
+            if (server() != null && server()!!.isRunning) {
+                send(Frame.Text(DatastoreConfig.webSocketConfig.secret))
+            } else {
+                close()
+            }
+
             while (server() != null && server()!!.isRunning) {
                 if (!connected) {
                     CobbledHunters.LOGGER.info("Cobbled Hunters: Connected to WebSocket!")

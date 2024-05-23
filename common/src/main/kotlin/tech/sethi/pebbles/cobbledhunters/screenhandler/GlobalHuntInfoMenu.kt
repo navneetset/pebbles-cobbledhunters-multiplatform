@@ -11,8 +11,8 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import tech.sethi.pebbles.cobbledhunters.config.economy.EconomyConfig
-import tech.sethi.pebbles.cobbledhunters.config.reward.RewardConfigLoader
 import tech.sethi.pebbles.cobbledhunters.config.screenhandler.GlobalHuntDetailScreenConfig
+import tech.sethi.pebbles.cobbledhunters.data.DatabaseHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.global.GlobalHuntHandler
 import tech.sethi.pebbles.cobbledhunters.hunt.type.*
 import tech.sethi.pebbles.cobbledhunters.util.PM
@@ -61,12 +61,12 @@ class GlobalHuntInfoMenu(
 
         val guaranteedRewardIds = hunt.guaranteedRewardId
         val guaranteedRewards =
-            guaranteedRewardIds.map { RewardConfigLoader.rewards.first { reward -> reward.id == it } }
+            guaranteedRewardIds.mapNotNull { DatabaseHandler.db!!.getReward(it) }
 
         val rewardPools = hunt.rewardPools
         val rolledRewards = rewardPools.map { it.reward }
         val rolledRewardIds = rolledRewards.map { it.rewardId }
-        val rolledRewardsList = rolledRewardIds.map { RewardConfigLoader.rewards.first { reward -> reward.id == it } }
+        val rolledRewardsList = rolledRewardIds.mapNotNull { DatabaseHandler.db!!.getReward(it) }
 
 
         val huntInfo = hunt.description
@@ -147,13 +147,13 @@ class GlobalHuntInfoMenu(
 
             val guaranteedRankRewardIds = rankRewards.guaranteedRewardId
             val guaranteedRankRewards =
-                guaranteedRankRewardIds.map { RewardConfigLoader.rewards.first { reward -> reward.id == it } }
+                guaranteedRankRewardIds.mapNotNull { DatabaseHandler.db!!.getReward(it) }
 
             val rankRewardPools = rankRewards.rewardPools
             val rolledRankRewards = rankRewardPools.map { it.reward }
             val rolledRankRewardIds = rolledRankRewards.map { it.rewardId }
             val rolledRankRewardsList =
-                rolledRankRewardIds.map { RewardConfigLoader.rewards.first { reward -> reward.id == it } }
+                rolledRankRewardIds.mapNotNull { DatabaseHandler.db!!.getReward(it) }
 
             val allRankRewards = guaranteedRankRewards + rolledRankRewardsList
             val allRankRewardsNames = allRankRewards.map { it.name }
